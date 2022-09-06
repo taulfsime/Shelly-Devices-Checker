@@ -1,0 +1,8 @@
+{
+	"delay": 1800,
+	"attempts": 2,
+	"attemptDelay": 2,
+	"devices": [
+		"192.168.0.114"
+	]
+}
