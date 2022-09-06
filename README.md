@@ -1,15 +1,14 @@
-# Shelly Devices Checker V1.0
+# Shelly Devices Checker V1.1
 This script will call preconfigured IP addresses that re in the current network and fetch some of the returned informations.
 
 Note: Works only with GEN-1 devices
 
-## How to install
-1. Download the project from the green button called "code" and then "Download ZIP"
-2. Install python (version > 3.10) (https://www.python.org/downloads/)
-3. Open command promt
-4. To check if the python is installed successfully, execute the following command in the terminal: python --version
-5. To install 'requests' library, execute this command: python -m pip install requests
-6. To install 'datetime' library, execute this command: python -m pip install datetime
+## How to install 
+1. Install python (version > 3.10) (https://www.python.org/downloads/)
+2. Open command promt
+3. To check if the python is installed successfully, execute the following command in the terminal: python --version
+4. Download the project from the green button called "code" and then "Download ZIP"
+5. Double-click on file called "SETUP"
 
 ## How to setup config file
 Open the file called 'config' in your text editor.
