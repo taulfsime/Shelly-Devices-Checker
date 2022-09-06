@@ -1,5 +1,5 @@
 # Shelly Devices Checker V1.0
-Script that will call pre configures IP address in the currect network and check and saves some information for the device.
+This script will call preconfigured IP addresses that re in the current network and fetch some of the returned informations.
 
 Note: Works only with GEN-1 devices
 
@@ -12,7 +12,10 @@ Note: Works only with GEN-1 devices
 6. To install 'datetime' library, execute this command: python -m pip install datetime
 
 ## How to setup config file
- - dalay - time in seconds after every check
+Open the file called 'config' in your text editor.
+
+Explanation of each variable:
+ - delay - time in seconds after every check
  - attempts - number of attempts to get the data per device
  - attemptDelay - time in seconds after every attempt
  - devices - list of devices IPs
