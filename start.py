@@ -21,6 +21,8 @@ def main():
         attempts = int(data["attempts"])
         attempDelay = int(data["attemptDelay"])
         devices = data["devices"]
+
+        print("Started")
         
         while True:
             savedInfo = []
