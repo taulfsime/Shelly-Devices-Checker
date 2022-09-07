@@ -1,4 +1,4 @@
-# Shelly Devices Checker V1.1
+# Shelly Devices Checker V1.2
 This script will call preconfigured IP addresses in the current network and save some of the information about devices.
 
 ## How to install 
@@ -23,6 +23,8 @@ Double-click file called "RUN"
 ## What the script does
 The script will run until the user closes the terminal. It will fetch device's information and stores it in the file. 
 It will make several attempts to get the data (configurable from the config file) with a custom delay between each try.
+Output's filename is in format "mm-dd-yy-HH-MM-SS"
+
 
 ## Chanage log
  - v1.2 - Added support for second gen devices and the data is saved in .csv file
