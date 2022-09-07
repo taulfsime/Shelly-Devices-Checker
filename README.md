@@ -26,3 +26,6 @@ Double-click file called "RUN"
 The script will run until the user closes the terminal. It will fetch device's information and stores it in the file. 
 It will make several attempts to get the data (configurable from the config file) with a custom delay between each try.
 
+## Chanage log
+ - v1.1 - Added SETUP file
+ - v1.0 - Project init
