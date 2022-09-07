@@ -4,7 +4,7 @@ This script will call preconfigured IP addresses that re in the current network 
 Note: Works only with GEN-1 devices
 
 ## How to install 
-1. Install python (version > 3.10) (https://www.python.org/downloads/)
+1. Install python and make sure that "Add Python to path" option is enabled (version > 3.10) (https://www.python.org/downloads/)
 2. Open command promt
 3. To check if the python is installed successfully, execute the following command in the terminal: python --version
 4. Download the project from the green button called "code" and then "Download ZIP"
