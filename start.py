@@ -1,21 +1,39 @@
 import requests
 import json
-from datetime import datetime
 import time
 
-data = None
-
-with open("config.json", "r") as file:
-    data = json.loads(file.read())
-
 def saveToFile(lines):
+    from datetime import datetime
     filename = datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
     
     with open(f"outputs/{filename}.txt", "w") as file:
         file.writelines(lines)
     print(f"The output was saved to {filename}")
 
-def main():
+def fetchInfo(attempts, attempDelay, ip):
+    for _ in range(0, attempts):
+        try:
+            output = requests.get(f"http://{ip}/status").json()
+            
+            rssi = output["wifi_sta"]["rssi"]
+            cloudConnected = output["cloud"]["connected"]
+            deviceID = output["mac"]
+            
+            return {
+                'rssi': rssi,
+                'id': deviceID,
+                'cc': cloudConnected
+            }
+            
+            break
+        except Exception as e:
+            print(f"Failed request to {ip}")
+
+        time.sleep(attempDelay)
+
+    return False
+
+def main(data):
     if data:
         delayTime = int(data["delay"])
         attempts = int(data["attempts"])
@@ -27,24 +45,10 @@ def main():
         while True:
             savedInfo = []
             for device in devices:
-                done = False
-                for attempt in range(0, attempts):
-                    try:
-                        output = requests.get(f"http://{device}/status").json()
-                        
-                        rssi = output["wifi_sta"]["rssi"]
-                        cloudConnected = output["cloud"]["connected"]
-                        deviceID = output["mac"]
-                        
-                        savedInfo.append(f"IP: {device} RSSI: {rssi} ID: {deviceID} CC: {cloudConnected}")
-                        
-                        done = True
-                        break
-                    except Exception as e:
-                        print(f"Failed request to {device}")
-                    
-                    time.sleep(attempDelay)
-                if not done:
+                output = fetchInfo(attempts=attempts, attempDelay=attempDelay, ip=device)
+                if output:
+                    savedInfo.append(f"IP: {device} RSSI: {output['rssi']} ID: {output['id']} CC: {output['cc']}")
+                else:
                     savedInfo.append(f"IP: {device} - Failed")
             
             saveToFile(savedInfo)
@@ -58,4 +62,9 @@ if __name__ == "__main__":
     except: 
         pass
         
-    main()
+    data = None
+
+    with open("config.json", "r") as file:
+        data = json.loads(file.read())
+
+    main(data)
