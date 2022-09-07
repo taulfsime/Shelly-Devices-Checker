@@ -2,12 +2,17 @@ import requests
 import json
 import time
 
-def saveToFile(lines):
+def saveToCSVFile(lines):
     from datetime import datetime
+    import csv
+
     filename = datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
     
-    with open(f"outputs/{filename}.txt", "w") as file:
-        file.writelines(lines)
+    lines.insert(0, ["IP", "RSSI", "ID", "CC"])
+
+    with open(f"outputs/{filename}.csv", "w") as file:
+        csv.writer(file).writerows(lines)
+
     print(f"The output was saved to {filename}")
 
 def getDeviceGen(ip):
@@ -84,11 +89,11 @@ def main(data):
         for device in devices:
             output = callDevice(attempts, attempDelay, device)
             if output:
-                savedInfo.append(f"IP: {device} RSSI: {output['rssi']} ID: {output['id']} CC: {output['cc']}")
+                savedInfo.append([device, output['rssi'], output['id'], output['cc']])
             else:
-                savedInfo.append(f"IP: {device} - Failed")
+                savedInfo.append([device, "Failed"])
         
-        saveToFile(savedInfo)
+        saveToCSVFile(savedInfo)
         print(f"Delay of {delayTime} seconds")
         time.sleep(delayTime)
             
