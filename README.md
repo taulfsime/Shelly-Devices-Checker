@@ -1,7 +1,7 @@
-# Shelly Devices Checker V1.2
+# Shelly Devices Checker V1.3
 This script will call preconfigured IP addresses in the current network and save some of the information about devices.
 
-## How to install 
+## How to use 
 1. Install python and make sure that "Add Python to path" option is enabled (https://www.python.org/downloads/)
 2. Open command promt
 3. To check if the python is installed successfully, execute the following command in the terminal: python --version

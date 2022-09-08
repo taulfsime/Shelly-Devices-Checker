@@ -15,60 +15,19 @@ def saveToCSVFile(lines):
 
     print(f"The output was saved to {filename}")
 
-def getDeviceGen(ip):
-    try:
-        output = requests.get(f"http://{ip}/shelly").json()
-        if "gen" in output and output["gen"] == 2:
-            return 2
-        else:
-            return 1
-
-    except:
-        return False
-
-def fetchInfo(ip, gen):
-    URLs = [
-        {
-            "status": f"http://{ip}/status",
-            "config": f"http://{ip}/settings"
-        },
-        {
-            "status": f"http://{ip}/rpc/Shelly.GetStatus",
-            "config": f"http://{ip}/rpc/Shelly.GetConfig"
-        }
-    ]
-
-    try:
-        status = requests.get(URLs[gen - 1]["status"]).json()
-        config = requests.get(URLs[gen - 1]["config"]).json()
-
-        return {
-            "status": status,
-            "config": config
-        }
-    except:
-        return False
-
 def callDevice(attempts, attempDelay, ip):
+    from shellies import ShellyDevice
+
     for _ in range(0, attempts):
         try:
-            gen = getDeviceGen(ip)
-            data = fetchInfo(ip, gen)
+            device = ShellyDevice(ip)
 
-            if gen == 1:
-                rssi = data["status"]["wifi_sta"]["rssi"]
-                cloudConnected = data["status"]["cloud"]["connected"]
-                deviceID = data["status"]["mac"]
-            elif gen == 2:
-                rssi = data["status"]["wifi"]["rssi"]
-                cloudConnected = data["status"]["cloud"]["connected"]
-                deviceID = data["status"]["sys"]["mac"]
-            
-            return {
-                'rssi': rssi,
-                'id': deviceID,
-                'cc': cloudConnected
-            }
+            if device.valid():
+                return {
+                    'rssi': device.rssi(),
+                    'id': device.id(),
+                    'cc': device.cc()
+                }
         except:
             print(f"Failed request to {ip}")
 
