@@ -1,4 +1,3 @@
-import json
 import time
 
 def saveToCSVFile(lines):
@@ -36,9 +35,9 @@ def callDevice(attempts, attempDelay, ip):
     return False
 
 def main(data):
-    delayTime = int(data["delay"])
-    attempts = int(data["attempts"])
-    attempDelay = int(data["attemptDelay"])
+    delayTime = data["delay"]
+    attempts = data["attempts"]
+    attempDelay = data["attemptDelay"]
     devices = data["devices"]
 
     print("Started")
@@ -62,7 +61,9 @@ if __name__ == "__main__":
         os.mkdir("outputs")
     except: 
         pass
-        
+    
+    import json
+
     data = None
 
     with open("config.json", "r") as file:
