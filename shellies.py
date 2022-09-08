@@ -19,13 +19,13 @@ class ShellyDevice:
 
     def temperature(self):
         if not self.isValid:
-            raise Exception("error.rssi")
+            raise Exception("error.temperature")
 
         try:
             if self.gen == 1:
                 return self.status["tmp"]["tC"]
             elif self.gen == 2:
-                pass #TODO
+                return self.status["switch:0"]["temperature"]
         except:
             self.isValid = False
             return False
