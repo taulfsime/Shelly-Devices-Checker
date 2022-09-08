@@ -12,10 +12,23 @@ class ShellyDevice:
 
     def valid(self):
         """
-            Return true if the all the data is valid
+            Return true if the all the fetched data is valid
         """
 
         return self.isValid
+
+    def temperature(self):
+        if not self.isValid:
+            raise Exception("error.rssi")
+
+        try:
+            if self.gen == 1:
+                return self.status["tmp"]["tC"]
+            elif self.gen == 2:
+                pass #TODO
+        except:
+            self.isValid = False
+            return False
 
     def id(self):
         if not self.isValid:

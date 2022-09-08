@@ -1,4 +1,3 @@
-import requests
 import json
 import time
 
@@ -7,7 +6,7 @@ def saveToCSVFile(lines):
 
     filename = datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
     
-    lines.insert(0, ["IP", "RSSI", "ID", "CC"])
+    lines.insert(0, ["IP", "RSSI", "ID", "CC", "TMP"])
 
     with open(f"outputs/{filename}.csv", "w") as file:
         for line in lines:
@@ -24,9 +23,10 @@ def callDevice(attempts, attempDelay, ip):
 
             if device.valid():
                 return {
-                    'rssi': device.rssi(),
-                    'id': device.id(),
-                    'cc': device.cc()
+                    "rssi": device.rssi(),
+                    "id": device.id(),
+                    "cc": device.cc(),
+                    "tmp": device.temperature()
                 }
         except:
             print(f"Failed request to {ip}")
@@ -48,7 +48,7 @@ def main(data):
         for device in devices:
             output = callDevice(attempts, attempDelay, device)
             if output:
-                savedInfo.append([device, output['rssi'], output['id'], output['cc']])
+                savedInfo.append([device, output['rssi'], output['id'], output['cc'], output["tmp"]])
             else:
                 savedInfo.append([device, "Failed"])
         
