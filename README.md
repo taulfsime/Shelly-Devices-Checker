@@ -23,10 +23,9 @@ Double-click file called "RUN"
 ## What the script does
 The script will run until the user closes the terminal. It will fetch device's information and stores it in the file. 
 It will make several attempts to get the data (configurable from the config file) with a custom delay between each try.
-Output's filename is in format "mm-dd-yy-HH-MM-SS"
-
 
 ## Chanage log
+ - v1.3 - Add Device Base class, fetch device's temperature value, added version check
  - v1.2 - Added support for second gen devices and the data is saved in .csv file
  - v1.1 - Added SETUP file
  - v1.0 - Project init
