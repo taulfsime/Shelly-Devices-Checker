@@ -54,7 +54,32 @@ def main(data):
         saveToCSVFile(savedInfo)
         print(f"Delay of {delayTime} seconds")
         time.sleep(delayTime)
-            
+
+def checkVersion(settings):
+    import requests
+
+    version = settings["version"]
+
+    if settings["checkStable"]:
+        try:
+            stable = requests.get(settings["stableURL"]).json()
+            if stable and "version" in stable:
+                if version != stable["version"]:
+                    print("New stable version is avaliable!")
+                    print("Check it here: https://github.com/taulfsime/Shelly-Devices-Checker")
+        except:
+            print("Error with checking for stable version")
+    
+    if settings["checkTest"]:
+        try:
+            test = requests.get(settings["testURL"]).json()
+            if test and "version" in test:
+                if version != test["version"]:
+                    print("New test version is avaliable!")
+                    print("Check it here: https://github.com/taulfsime/Shelly-Devices-Checker/tree/dev")
+        except:
+            print("Error with checking for test version")
+
 if __name__ == "__main__":
     try:
         import os
@@ -65,9 +90,16 @@ if __name__ == "__main__":
     import json
 
     data = None
+    settings = None
 
     with open("config.json", "r") as file:
         data = json.loads(file.read())
+    
+    with open("settings.json", "r") as file:
+        settings = json.loads(file.read())
+
+    if settings:
+        checkVersion(settings)
 
     if data:
         main(data)
