@@ -25,7 +25,7 @@ class ShellyDevice:
             if self.gen == 1:
                 return self.status["tmp"]["tC"]
             elif self.gen == 2:
-                return self.status["switch:0"]["temperature"]
+                return self.status["switch:0"]["temperature"]["tC"]
         except:
             self.isValid = False
             return False

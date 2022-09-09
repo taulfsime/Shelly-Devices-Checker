@@ -1,4 +1,4 @@
-# Shelly Devices Checker V1.3
+# Shelly Devices Checker
 This script will call preconfigured IP addresses in the current network and save some of the information about devices.
 
 ## How to use 
