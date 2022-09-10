@@ -1,7 +1,7 @@
 {
-    "version": "v1.3",
+    "version": "v1.4",
     "checkStable": true,
     "stableURL": "https://raw.githubusercontent.com/taulfsime/Shelly-Devices-Checker/main/settings.json",
-    "checkTest": true,
+    "checkTest": false,
     "testURL": "https://raw.githubusercontent.com/taulfsime/Shelly-Devices-Checker/dev/settings.json"
 }
