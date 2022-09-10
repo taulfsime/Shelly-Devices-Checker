@@ -6,12 +6,32 @@ class Action:
         self.enabled = self.data["enabled"]
 
     def CanNotReachHandler(self, target):
-        if not self.enabled:
-            return
+        if not self.enabled: return
 
         if self.when["type"].lower() == "CanNotReach".lower():
-            if "target" in self.when and self.when["target"] == target:
+            if self.when["target"] == target:
                 self.execute()
+
+    def CheckVariableHandler(self, target, targetData):
+        if not self.enabled: return
+
+        if self.when["type"].lower() == "CheckVar".lower():
+            if self.when["target"] == target and self.when["var"] in targetData:
+                targetValue = targetData[self.when["var"]]
+                checkValue = self.when["value"]
+
+                if self.when["check"] == "lower":
+                    if targetValue < checkValue:
+                        self.execute()
+
+                elif self.when["check"] == "equal":
+                    if targetValue == checkValue:
+                        self.execute()
+
+                elif self.when["check"] == "higher":
+                    if targetValue > checkValue:
+                        self.execute()
+                    
 
     def _callUrl(self, action):
         if "url" not in action:

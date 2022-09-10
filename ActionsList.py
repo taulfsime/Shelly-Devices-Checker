@@ -8,3 +8,7 @@ class ActionsList:
     def CanNotReachHandler(self, target):
         for act in self.actions:
             act.CanNotReachHandler(target)
+
+    def CheckVariableHandler(self, target, targetData):
+        for act in self.actions:
+            act.CheckVariableHandler(target, targetData)

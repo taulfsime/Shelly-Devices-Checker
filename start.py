@@ -22,12 +22,16 @@ def callDevice(attempts, attempDelay, ip, actions):
             device = ShellyDevice(ip)
 
             if device.valid():
-                return {
+                data = {
                     "rssi": device.rssi(),
                     "id": device.id(),
                     "cc": device.cc(),
                     "tmp": device.temperature()
                 }
+
+                actions.CheckVariableHandler(ip, data)
+
+                return data
         except:
             print(f"Failed request to {ip}")
 

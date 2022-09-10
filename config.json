@@ -3,14 +3,30 @@
 	"attempts": 1,
 	"attemptDelay": 2,
 	"devices": [
-		"192.168.0.114"
+		"192.168.1.5"
 	],
 	"actions": [
 		{
 			"enabled": true,
 			"when": {
 				"type": "CanNotReach",
-				"target": "192.168.0.114"
+				"target": "192.168.1.5"
+			},
+			"do": [
+				{
+					"action": "callUrl",
+					"url": ""
+				}
+			]
+		},
+		{
+			"enabled": true,
+			"when": {
+				"type": "checkVar",
+				"var": "rssi",
+				"check": "higher",
+				"value": -80,
+				"target": "192.168.1.5"
 			},
 			"do": [
 				{
