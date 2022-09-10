@@ -1,4 +1,5 @@
 import time
+from ActionsList import ActionsList
 
 def saveToCSVFile(lines):
     from datetime import datetime
@@ -13,7 +14,7 @@ def saveToCSVFile(lines):
 
     print(f"The output was saved to {filename}")
 
-def callDevice(attempts, attempDelay, ip):
+def callDevice(attempts, attempDelay, ip, actions):
     from shellies import ShellyDevice
 
     for _ in range(0, attempts):
@@ -32,20 +33,23 @@ def callDevice(attempts, attempDelay, ip):
 
         time.sleep(attempDelay)
 
+    actions.CanNotReachHandler(target = ip)
     return False
 
 def main(data):
+
     delayTime = data["delay"]
     attempts = data["attempts"]
     attempDelay = data["attemptDelay"]
     devices = data["devices"]
+    actions = ActionsList(data["actions"] if "actions" in data else [])
 
     print("Started")
     
     while True:
         savedInfo = []
         for device in devices:
-            output = callDevice(attempts, attempDelay, device)
+            output = callDevice(attempts, attempDelay, device, actions)
             if output:
                 savedInfo.append([device, output['rssi'], output['id'], output['cc'], output["tmp"]])
             else:
