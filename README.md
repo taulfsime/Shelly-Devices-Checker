@@ -16,7 +16,19 @@ Explanation of each variable:
  - attempts - number of attempts to get the data per device
  - attemptDelay - time in seconds after every attempt
  - devices - list of devices IPs
- 
+ - actions - list of actions
+
+Actions:
+ - CanNotReach
+   - Desc: Execute the action if the target can't be reached after all attemps
+   - Target: IP of device
+ - CheckVar
+   - Desc: Execute the action comparion of specific value to target value is successfull
+   - Target: IP of device
+   - Var: Key for specific value from device
+   - Check: Comparison type, allowed values are higher, lower or equal(should be used only with bool values)
+   - Value: Target value
+
 ## How to run
 Double-click file called "RUN"
 

@@ -42,5 +42,5 @@ class Action:
 
     def execute(self):
         for action in self.do:
-            if action["action"].lower() == "callUrl".lower():
+            if action["type"].lower() == "callUrl".lower():
                 self._callUrl(action)

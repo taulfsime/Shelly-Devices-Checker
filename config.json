@@ -14,7 +14,7 @@
 			},
 			"do": [
 				{
-					"action": "callUrl",
+					"type": "callUrl",
 					"url": ""
 				}
 			]
@@ -22,7 +22,7 @@
 		{
 			"enabled": true,
 			"when": {
-				"type": "checkVar",
+				"type": "CheckVar",
 				"var": "rssi",
 				"check": "higher",
 				"value": -80,
@@ -30,7 +30,7 @@
 			},
 			"do": [
 				{
-					"action": "callUrl",
+					"type": "callUrl",
 					"url": ""
 				}
 			]
