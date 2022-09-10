@@ -1,74 +1,32 @@
-import requests
-import json
 import time
 
 def saveToCSVFile(lines):
     from datetime import datetime
-    import csv
 
     filename = datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
     
-    lines.insert(0, ["IP", "RSSI", "ID", "CC"])
+    lines.insert(0, ["IP", "RSSI", "ID", "CC", "TMP"])
 
     with open(f"outputs/{filename}.csv", "w") as file:
-        csv.writer(file).writerows(lines)
+        for line in lines:
+            file.write(", ".join([str(x) for x in line]) + "\n")
 
     print(f"The output was saved to {filename}")
 
-def getDeviceGen(ip):
-    try:
-        output = requests.get(f"http://{ip}/shelly").json()
-        if "gen" in output and output["gen"] == 2:
-            return 2
-        else:
-            return 1
-
-    except:
-        return False
-
-def fetchInfo(ip, gen):
-    URLs = [
-        {
-            "status": f"http://{ip}/status",
-            "config": f"http://{ip}/settings"
-        },
-        {
-            "status": f"http://{ip}/rpc/Shelly.GetStatus",
-            "config": f"http://{ip}/rpc/Shelly.GetConfig"
-        }
-    ]
-
-    try:
-        status = requests.get(URLs[gen - 1]["status"]).json()
-        config = requests.get(URLs[gen - 1]["config"]).json()
-
-        return {
-            "status": status,
-            "config": config
-        }
-    except:
-        return False
-
 def callDevice(attempts, attempDelay, ip):
+    from shellies import ShellyDevice
+
     for _ in range(0, attempts):
         try:
-            gen = getDeviceGen(ip)
-            data = fetchInfo(ip, gen)
+            device = ShellyDevice(ip)
 
-            if gen == 1:
-                rssi = data["status"]["wifi_sta"]["rssi"]
-                cloudConnected = data["status"]["cloud"]["connected"]
-                deviceID = data["status"]["mac"]
-            elif gen == 2:
-                rssi = data["status"]["wifi"]["rssi"]
-                cloudConnected = data["status"]["cloud"]["connected"]
-                deviceID = data["status"]["sys"]["mac"]
-            
-            return {
-                'rssi': rssi,
-                'id': deviceID,
-                'cc': cloudConnected
-            }
+            if device.valid():
+                return {
+                    "rssi": device.rssi(),
+                    "id": device.id(),
+                    "cc": device.cc(),
+                    "tmp": device.temperature()
+                }
         except:
             print(f"Failed request to {ip}")
 
@@ -77,9 +35,9 @@ def callDevice(attempts, attempDelay, ip):
     return False
 
 def main(data):
-    delayTime = int(data["delay"])
-    attempts = int(data["attempts"])
-    attempDelay = int(data["attemptDelay"])
+    delayTime = data["delay"]
+    attempts = data["attempts"]
+    attempDelay = data["attemptDelay"]
     devices = data["devices"]
 
     print("Started")
@@ -89,25 +47,59 @@ def main(data):
         for device in devices:
             output = callDevice(attempts, attempDelay, device)
             if output:
-                savedInfo.append([device, output['rssi'], output['id'], output['cc']])
+                savedInfo.append([device, output['rssi'], output['id'], output['cc'], output["tmp"]])
             else:
                 savedInfo.append([device, "Failed"])
         
         saveToCSVFile(savedInfo)
         print(f"Delay of {delayTime} seconds")
         time.sleep(delayTime)
-            
+
+def checkVersion(settings):
+    import requests
+
+    version = settings["version"]
+
+    if settings["checkStable"]:
+        try:
+            stable = requests.get(settings["stableURL"]).json()
+            if stable and "version" in stable:
+                if version != stable["version"]:
+                    print("New stable version is avaliable!")
+                    print("Check it here: https://github.com/taulfsime/Shelly-Devices-Checker")
+        except:
+            print("Error with checking for stable version")
+    
+    if settings["checkTest"]:
+        try:
+            test = requests.get(settings["testURL"]).json()
+            if test and "version" in test:
+                if version != test["version"]:
+                    print("New test version is avaliable!")
+                    print("Check it here: https://github.com/taulfsime/Shelly-Devices-Checker/tree/dev")
+        except:
+            print("Error with checking for test version")
+
 if __name__ == "__main__":
     try:
         import os
         os.mkdir("outputs")
     except: 
         pass
-        
+    
+    import json
+
     data = None
+    settings = None
 
     with open("config.json", "r") as file:
         data = json.loads(file.read())
+    
+    with open("settings.json", "r") as file:
+        settings = json.loads(file.read())
+
+    if settings:
+        checkVersion(settings)
 
     if data:
         main(data)
