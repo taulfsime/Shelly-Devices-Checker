@@ -1,11 +1,9 @@
-from Webhooks import ConditionTypes
-
-
 class Program:
     def __init__(self):
         self.config = None
         self.settings = None
         self.webhooksList = None
+        self.eventLogs = []
 
     def fetchDevice(self, ip):
         from ShellyDevice import ShellyDevice
@@ -43,6 +41,14 @@ class Program:
             for device in self.config["devices"]:
                 self.fetchDevice(device)
             
+            from datetime import datetime
+            filename = datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
+            with open(f"outputs/{filename}.txt", "w") as file:
+                for line in self.eventLogs:
+                    file.write(str(line[1]) + "\n")
+
+            print(f"The output was saved to {filename}")
+
             print(f"Delay of {self.config['delay']} seconds")
             time.sleep(self.config["delay"])
 
@@ -54,6 +60,7 @@ class Program:
             self.config = json.loads(file.read())
 
         self.webhooksList = WebhooksList(self.config["webhooks"] if "webhooks" in self.config else [])
+        self.webhooksList.setEventLogHandler(self.eventLogHandler)
 
     def versionCheck(self):
         import json
@@ -86,3 +93,9 @@ class Program:
                         print("Check it here: https://github.com/taulfsime/Shelly-Devices-Checker/tree/dev")
             except:
                 print("Error with checking for test version")
+
+    def eventLogHandler(self, data):
+        import time
+
+        self.eventLogs.append((time.time(), data))
+        print(data)
