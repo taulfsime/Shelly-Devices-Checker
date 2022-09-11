@@ -1,14 +1,17 @@
+from Webhooks import ConditionTypes
+
+
 class Program:
     def __init__(self):
         self.config = None
         self.settings = None
-        self.actionsList = None
+        self.webhooksList = None
 
     def fetchDevice(self, ip):
         from ShellyDevice import ShellyDevice
         import time
-        from Action import Action
-
+        from Webhooks import ConditionTypes
+        
         for _ in range(0, self.config["attempts"]):
             try:
                 device = ShellyDevice(ip)
@@ -22,15 +25,15 @@ class Program:
                         "ip": ip
                     }
                     
-                    self.actionsList.checkHandler(Action.EachCheck, deviceData)
-                    self.actionsList.checkHandler(Action.CheckVar, deviceData)
+                    self.webhooksList.checkHandler(ConditionTypes.EachCheck, deviceData)
+                    self.webhooksList.checkHandler(ConditionTypes.CheckVar, deviceData)
                     return True
             except:
                 pass
 
             time.sleep(self.config["attemptDelay"])
 
-        self.actionsList.checkHandler(Action.CanNotReach, { "ip": ip })
+        self.webhooksList.checkHandler(ConditionTypes.CanNotReach, { "ip": ip })
         return False
 
     def handle(self):
@@ -45,12 +48,12 @@ class Program:
 
     def loadConfig(self):
         import json
-        from Action import ActionsList
+        from Webhooks import WebhooksList
         
         with open("config.json", "r") as file:
             self.config = json.loads(file.read())
 
-        self.actionsList = ActionsList(self.config["actions"] if "actions" in self.config else [])
+        self.webhooksList = WebhooksList(self.config["webhooks"] if "webhooks" in self.config else [])
 
     def versionCheck(self):
         import json

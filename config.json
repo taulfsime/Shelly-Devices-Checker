@@ -5,7 +5,7 @@
 	"devices": [
 		"192.168.1.5"
 	],
-	"actions": [
+	"webhooks": [
 		{
 			"enabled": true,
 			"when": {
@@ -13,7 +13,7 @@
 			},
 			"do": [
 				{
-					"type": "consoleLog"
+					"type": "ConsoleLog"
 				}
 			]
 		}
