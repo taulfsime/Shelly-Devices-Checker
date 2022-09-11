@@ -3,36 +3,17 @@
 	"attempts": 1,
 	"attemptDelay": 2,
 	"devices": [
-		"192.168.1.5",
-		"192.168.21.100"
+		"192.168.1.5"
 	],
 	"actions": [
 		{
 			"enabled": true,
 			"when": {
-				"type": "CanNotReach",
-				"target": "192.168.21.100"
+				"type": "EachCheck"
 			},
 			"do": [
 				{
-					"type": "callUrl",
-					"url": ""
-				}
-			]
-		},
-		{
-			"enabled": true,
-			"when": {
-				"type": "CheckVar",
-				"var": "rssi",
-				"check": "higher",
-				"value": -80,
-				"target": "192.168.1.5"
-			},
-			"do": [
-				{
-					"type": "callUrl",
-					"url": ""
+					"type": "consoleLog"
 				}
 			]
 		}

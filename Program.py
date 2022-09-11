@@ -21,13 +21,14 @@ class Program:
                         "tmp": device.temperature(),
                         "ip": ip
                     }
-
+                    
+                    self.actionsList.checkHandler(Action.EachCheck, deviceData)
                     self.actionsList.checkHandler(Action.CheckVar, deviceData)
                     return True
             except:
                 pass
 
-            time.sleep(self.config["attempDelay"])
+            time.sleep(self.config["attemptDelay"])
 
         self.actionsList.checkHandler(Action.CanNotReach, { "ip": ip })
         return False
@@ -39,8 +40,8 @@ class Program:
             for device in self.config["devices"]:
                 self.fetchDevice(device)
             
-            print(f"Delay of {self.config['delayTime']} seconds")
-            time.sleep(self.config["delayTime"])
+            print(f"Delay of {self.config['delay']} seconds")
+            time.sleep(self.config["delay"])
 
     def loadConfig(self):
         import json
