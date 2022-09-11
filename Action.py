@@ -1,6 +1,3 @@
-from cgitb import handler
-
-
 class Action:
     CanNotReach = "CanNotReach"
     CheckVar = "CheckVar"
@@ -62,3 +59,12 @@ class Action:
         for action in self.do:
             if action["type"].lower() == "callUrl".lower():
                 self._callUrl(action)
+
+class ActionsList:
+    def __init__(self, data):
+        self.data = data
+        self.actions = [Action(x) for x in self.data]
+
+    def checkHandler(self, event, targetData):
+        for act in self.actions:
+            act.check(event, targetData)

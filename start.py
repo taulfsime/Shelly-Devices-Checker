@@ -1,7 +1,3 @@
-import time
-from ActionsList import ActionsList
-from Action import Action
-
 def saveToCSVFile(lines):
     from datetime import datetime
 
@@ -15,103 +11,17 @@ def saveToCSVFile(lines):
 
     print(f"The output was saved to {filename}")
 
-def callDevice(attempts, attempDelay, ip, actions):
-    from shellies import ShellyDevice
-
-    for _ in range(0, attempts):
-        try:
-            device = ShellyDevice(ip)
-
-            if device.valid():
-                data = {
-                    "rssi": device.rssi(),
-                    "id": device.id(),
-                    "cc": device.cc(),
-                    "tmp": device.temperature(),
-                    "ip": ip
-                }
-
-                actions.checkHandler(Action.CheckVar, data)
-
-                return data
-        except:
-            print(f"Failed request to {ip}")
-
-        time.sleep(attempDelay)
-
-    actions.checkHandler(Action.CanNotReach, { "ip": ip })
-    return False
-
-def main(data):
-
-    delayTime = data["delay"]
-    attempts = data["attempts"]
-    attempDelay = data["attemptDelay"]
-    devices = data["devices"]
-    actions = ActionsList(data["actions"] if "actions" in data else [])
-
-    print("Started")
-    
-    while True:
-        savedInfo = []
-        for device in devices:
-            output = callDevice(attempts, attempDelay, device, actions)
-            if output:
-                savedInfo.append([device, output['rssi'], output['id'], output['cc'], output["tmp"]])
-            else:
-                savedInfo.append([device, "Failed"])
-        
-        saveToCSVFile(savedInfo)
-        print(f"Delay of {delayTime} seconds")
-        time.sleep(delayTime)
-
-def checkVersion(settings):
-    import requests
-
-    version = settings["version"]
-
-    if settings["checkStable"]:
-        try:
-            stable = requests.get(settings["stableURL"]).json()
-            if stable and "version" in stable:
-                if version != stable["version"]:
-                    print("New stable version is avaliable!")
-                    print("Check it here: https://github.com/taulfsime/Shelly-Devices-Checker")
-        except:
-            print("Error with checking for stable version")
-    
-    if settings["checkTest"]:
-        try:
-            test = requests.get(settings["testURL"]).json()
-            if test and "version" in test:
-                if version != test["version"]:
-                    print("New test version is avaliable!")
-                    print("Check it here: https://github.com/taulfsime/Shelly-Devices-Checker/tree/dev")
-        except:
-            print("Error with checking for test version")
-
 if __name__ == "__main__":
     try:
         import os
         os.mkdir("outputs")
     except: 
         pass
+
+    from Program import Program
     
-    import json
+    app = Program()
+    app.versionCheck()
+    app.loadConfig()
 
-    data = None
-    settings = None
-
-    with open("config.json", "r") as file:
-        data = json.loads(file.read())
-    
-    with open("settings.json", "r") as file:
-        settings = json.loads(file.read())
-
-    if settings:
-        checkVersion(settings)
-
-    if data:
-        main(data)
-    else:
-        print("Missing config file")
+    app.handle()
