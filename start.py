@@ -1,5 +1,6 @@
 import time
 from ActionsList import ActionsList
+from Action import Action
 
 def saveToCSVFile(lines):
     from datetime import datetime
@@ -26,10 +27,11 @@ def callDevice(attempts, attempDelay, ip, actions):
                     "rssi": device.rssi(),
                     "id": device.id(),
                     "cc": device.cc(),
-                    "tmp": device.temperature()
+                    "tmp": device.temperature(),
+                    "ip": ip
                 }
 
-                actions.CheckVariableHandler(ip, data)
+                actions.checkHandler(Action.CheckVar, data)
 
                 return data
         except:
@@ -37,7 +39,7 @@ def callDevice(attempts, attempDelay, ip, actions):
 
         time.sleep(attempDelay)
 
-    actions.CanNotReachHandler(target = ip)
+    actions.checkHandler(Action.CanNotReach, { "ip": ip })
     return False
 
 def main(data):

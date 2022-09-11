@@ -1,5 +1,5 @@
 # Shelly Devices Checker
-This script will call preconfigured IP addresses in the current network and save some of the information about devices.
+This script will call preconfigured IP addresses in the current network and save some of the information about devices. Supppor actions which will run based on a condition and can execute multiple actions.
 
 ## How to use 
 1. Install python and make sure that "Add Python to path" option is enabled (https://www.python.org/downloads/)
@@ -23,7 +23,7 @@ Actions:
    - Desc: Execute the action if the target can't be reached after all attemps
    - Target: IP of device
  - CheckVar
-   - Desc: Execute the action comparion of specific value to target value is successfull
+   - Desc: Execute the action if the comparison of specific value to target value is successful
    - Target: IP of device
    - Var: Key for specific value from device
    - Check: Comparison type, allowed values are higher, lower or equal(should be used only with bool values)
@@ -35,9 +35,11 @@ Double-click file called "RUN"
 ## What the script does
 The script will run until the user closes the terminal. It will fetch device's information and stores it in the file. 
 It will make several attempts to get the data (configurable from the config file) with a custom delay between each try.
+The scipt support multiple actions with the following conditions: when the device can't be reached after all attempts or based on values comparison. You can execute multiple actions, but currently the only supported is a request to specific URL.
 
-## Chanage log
- - v1.3 - Add Device Base class, fetch device's temperature value, added version check
+## Change log
+ - v1.4 - Added actions
+ - v1.3 - Added device base class, fetch device's temperature value and added version check at start
  - v1.2 - Added support for second gen devices and the data is saved in .csv file
  - v1.1 - Added SETUP file
  - v1.0 - Project init
