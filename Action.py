@@ -1,22 +1,33 @@
+from cgitb import handler
+
+
 class Action:
+    CanNotReach = "CanNotReach"
+    CheckVar = "CheckVar"
+
     def __init__(self, data):
         self.data = data
         self.when = self.data["when"]
         self.do = self.data["do"]
         self.enabled = self.data["enabled"]
 
-    def CanNotReachHandler(self, target):
+        self.handlers = {
+            self.CanNotReach: self._canNotReachHandler,
+            self.CheckVar: self._checkVariableHandler
+        }
+
+    def _canNotReachHandler(self, targetData):
         if not self.enabled: return
 
-        if self.when["type"].lower() == "CanNotReach".lower():
-            if self.when["target"] == target:
+        if self.when["type"].lower() == self.CanNotReach.lower():
+            if self.when["target"] == targetData["ip"]:
                 self.execute()
 
-    def CheckVariableHandler(self, target, targetData):
+    def _checkVariableHandler(self, targetData):
         if not self.enabled: return
 
-        if self.when["type"].lower() == "CheckVar".lower():
-            if self.when["target"] == target and self.when["var"] in targetData:
+        if self.when["type"].lower() == self.CheckVar.lower():
+            if self.when["target"] == targetData["ip"] and self.when["var"] in targetData:
                 targetValue = targetData[self.when["var"]]
                 checkValue = self.when["value"]
 
@@ -39,6 +50,13 @@ class Action:
 
         import requests
         ret = requests.get(action["url"])
+
+    def check(self, event, targetData):
+        if not self.enabled: return
+    
+        if event in self.handlers:
+            self.handlers[event](targetData)
+
 
     def execute(self):
         for action in self.do:

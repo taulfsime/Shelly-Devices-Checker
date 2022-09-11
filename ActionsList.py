@@ -5,10 +5,6 @@ class ActionsList:
         self.data = data
         self.actions = [Action(x) for x in self.data]
 
-    def CanNotReachHandler(self, target):
+    def checkHandler(self, event, targetData):
         for act in self.actions:
-            act.CanNotReachHandler(target)
-
-    def CheckVariableHandler(self, target, targetData):
-        for act in self.actions:
-            act.CheckVariableHandler(target, targetData)
+            act.check(event, targetData)
