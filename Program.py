@@ -1,9 +1,11 @@
 class Program:
     def __init__(self):
+        from DataManager import DataManager
+
         self.config = None
         self.settings = None
         self.webhooksList = None
-        self.eventLogs = []
+        self.dataManager = DataManager()
 
     def fetchDevice(self, ip):
         from ShellyDevice import ShellyDevice
@@ -25,14 +27,13 @@ class Program:
                     
                     self.webhooksList.checkHandler(ConditionTypes.EachCheck, deviceData)
                     self.webhooksList.checkHandler(ConditionTypes.CheckVar, deviceData)
-                    return True
+                    break
             except:
                 pass
 
             time.sleep(self.config["attemptDelay"])
 
         self.webhooksList.checkHandler(ConditionTypes.CanNotReach, { "ip": ip })
-        return False
 
     def handle(self):
         import time
