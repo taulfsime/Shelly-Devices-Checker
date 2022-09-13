@@ -1,0 +1,13 @@
+{
+    "extends": [ "Gen1" ],
+    "commands": [
+        "RelayIsOn",
+        "RelaySource",
+        "MeterPower",
+        "OverTemperature"
+    ],
+    "RelayIsOn": "status:relays/0/ison",
+    "RelaySource": "status:relays/0/ison",
+    "MeterPower": "status:meters/0/power",
+    "OverTemperature": "status:overtemperature"
+}

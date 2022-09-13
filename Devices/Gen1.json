@@ -1,0 +1,31 @@
+{
+    "extends": [],
+    "commands": [
+        "WiFi1Connected", 
+        "WiFi1SSID", 
+        "WiFi1IP", 
+        "WiFi1RSSI", 
+        "CloudEnabled",
+        "CloudConnected",
+        "Time",
+        "UnixTime",
+        "HasUpdate",
+        "ID",
+        "TemperatureC",
+        "TemperatureF",
+        "Uptime"
+    ],
+    "WiFiConnected": "status:wifi_sta/connected",
+    "WiFi1SSID": "status:wifi_sta/ssid",
+    "WiFi1IP": "status:wifi_sta/ip",
+    "WiFi1RSSI": "status:wifi_sta/rssi",
+    "CloudEnabled": "status:cloud/enabled",
+    "CloudConnected": "status:cloud/connected",
+    "Time": "status:time",
+    "UnixTime": "status:unixtime",
+    "HasUpdate": "status:has_update",
+    "ID": "status:mac",
+    "TemperatureC": "status:tmp/tC",
+    "TemperatureF": "status:tmp/tF",
+    "Uptime": "status:uptime"
+}

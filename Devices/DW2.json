@@ -1,0 +1,9 @@
+{
+    "extends": [ "Gen1" ],
+    "commands": [
+        "State",
+        "BatteryVoltage"
+    ],
+    "State": "status:sensor/state",
+    "BatteryVoltage": "status:bat/voltage"
+}
