@@ -41,14 +41,6 @@ class Program:
         while True:
             for device in self.config["devices"]:
                 self.fetchDevice(device)
-            
-            from datetime import datetime
-            filename = datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
-            with open(f"outputs/{filename}.txt", "w") as file:
-                for line in self.eventLogs:
-                    file.write(str(line[1]) + "\n")
-
-            print(f"The output was saved to {filename}")
 
             print(f"Delay of {self.config['delay']} seconds")
             time.sleep(self.config["delay"])

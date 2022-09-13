@@ -3,70 +3,30 @@ class ShellyDevice:
         self.ip = ip
         
         self.refresh()
+        self.DEVICES = {
+            "SHSW-PM": "Devices"
+        }
         
     def refresh(self):
         self.isValid = True
-        self.gen = self._fetchDeviceGen()
-        self.status = self._fetchStatus()
-        self.config = self._fetchConfig()
+        self._fetchDeviceGen()
+        self._fetchStatus()
+        self._fetchConfig()
+
+    
 
     def valid(self):
-        """
-            Return true if the all the fetched data is valid
-        """
-
         return self.isValid
 
-    def temperature(self):
+    def _invalid(self):
+        self.isValid = False
+
+    def _checkValid(self, component):
         if not self.isValid:
-            raise Exception("error.temperature")
-
-        try:
-            if self.gen == 1:
-                return self.status["tmp"]["tC"]
-            elif self.gen == 2:
-                return self.status["switch:0"]["temperature"]["tC"]
-        except:
-            self.isValid = False
-            return False
-
-    def id(self):
-        if not self.isValid:
-            raise Exception("error.rssi")
-
-        try:
-            if self.gen == 1:
-                return self.status["mac"]
-            elif self.gen == 2:
-                return self.status["sys"]["mac"]
-        except:
-            self.isValid = False
-            return False
-
-    def rssi(self):
-        if not self.isValid:
-            raise Exception("error.rssi")
-
-        try:
-            return self.status["wifi" if self.gen == 2 else "wifi_sta"]["rssi"]
-        except:
-            self.isValid = False
-            return False
-
-
-    def cc(self):
-        if not self.isValid:
-            raise Exception("error.cloudConnected")
-
-        try:
-            return self.status["cloud"]["connected"]
-        except:
-            self.isValid = False
-            return False
+            raise Exception(f"error.{component}")
 
     def _fetchConfig(self):
-        if not self.isValid:
-            raise Exception("error.fetchConfig")
+        self._checkValid("fetchConfig")
 
         import requests
 
@@ -76,14 +36,12 @@ class ShellyDevice:
         ]
 
         try:
-            return requests.get(URLs[self.gen - 1]).json()
+            self.config = requests.get(URLs[self.gen - 1]).json()
         except:
-            self.isValid = False
-            return False
+            self._invalid()
 
     def _fetchStatus(self):
-        if not self.isValid:
-            raise Exception("error.fetchStatus")
+        self._checkValid("fetchStatus")
 
         import requests
 
@@ -93,24 +51,23 @@ class ShellyDevice:
         ]
 
         try:
-            return requests.get(URLs[self.gen - 1]).json()
+            self.status = requests.get(URLs[self.gen - 1]).json()
         except:
-            self.isValid = False
-            return False
+            self._invalid()
 
     def _fetchDeviceGen(self):
-        if not self.isValid:
-            raise Exception("error.fetchDeviceGen")
+        self._checkValid("fetchGen")
 
         import requests
 
         try:
             output = requests.get(f"http://{self.ip}/shelly").json()
             if "gen" in output and output["gen"] == 2:
-                return 2
+                self.key = output["app"]
+                self.gen = 2
             else:
-                return 1
+                self.key = output["type"]
+                self.gen = 1
 
         except:
-            self.isValid = False
-            return False
+            self._invalid()
