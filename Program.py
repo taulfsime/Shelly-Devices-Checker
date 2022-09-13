@@ -12,24 +12,18 @@ class Program:
         import time
         from Webhooks import ConditionTypes
         
+        ShellyDevice(ip)
+        return
         for _ in range(0, self.config["attempts"]):
             try:
                 device = ShellyDevice(ip)
 
                 if device.valid():
-                    deviceData = {
-                        "rssi": device.rssi(),
-                        "id": device.id(),
-                        "cc": device.cc(),
-                        "tmp": device.temperature(),
-                        "ip": ip
-                    }
-                    
-                    self.webhooksList.checkHandler(ConditionTypes.EachCheck, deviceData)
-                    self.webhooksList.checkHandler(ConditionTypes.CheckVar, deviceData)
+                    self.webhooksList.checkHandler(ConditionTypes.EachCheck, { "ip": ip })
+                    self.webhooksList.checkHandler(ConditionTypes.CheckVar, { "ip": ip })
                     break
-            except:
-                pass
+            except Exception as e:
+                print(f"ERROR:{e}")
 
             time.sleep(self.config["attemptDelay"])
 

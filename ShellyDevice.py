@@ -31,23 +31,23 @@ class ShellyDevice:
 
         import json
 
+        self.commands = {}
+        self.commandsList = []
+
         with open(f"Devices/{self.DEVICES[self.type]}.json", "r") as file:
             data = json.loads(file.read())
-            self.commandsList = data["commands"]
-            self.commands = {}
 
-            for command in self.commandsList:
-                self.commands[command] = data[command]
+            for command in data["commands"]:
+                self.commandsList.append(command)
+                self.commands["command"] = data[command]
 
-        if "extends" in data and len(data["extends"]) > 0:
-            for ext in data["extends"]:
-                with open(f"Devices/{ext}.json", "r") as file:
-                    extData = json.loads(file.read())
-                    self.commandsList.extend(extData["commands"])
-
-                    for command in extData["commands"]:
-                        self.commands[command] = extData[command]
-
+            if "extends" in data and len(data["extends"]) > 0:
+                for ext in data["extends"]:
+                    with open(f"Devices/{ext}.json", "r") as extFile:
+                        extData = json.loads(extFile.read())
+                        for command in extData["commands"]:
+                            self.commandsList.append(command)
+                            self.commands[command] = extData[command]
 
     def _checkValid(self, component):
         if not self.isValid:
@@ -84,8 +84,6 @@ class ShellyDevice:
             self._invalid()
 
     def _fetchDeviceGen(self):
-        self._checkValid("fetchGen")
-
         import requests
 
         try:

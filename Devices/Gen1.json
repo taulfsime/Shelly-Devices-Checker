@@ -1,5 +1,4 @@
 {
-    "extends": [],
     "commands": [
         "WiFi1Connected", 
         "WiFi1SSID", 
@@ -15,7 +14,7 @@
         "TemperatureF",
         "Uptime"
     ],
-    "WiFiConnected": "status:wifi_sta/connected",
+    "WiFi1Connected": "status:wifi_sta/connected",
     "WiFi1SSID": "status:wifi_sta/ssid",
     "WiFi1IP": "status:wifi_sta/ip",
     "WiFi1RSSI": "status:wifi_sta/rssi",
