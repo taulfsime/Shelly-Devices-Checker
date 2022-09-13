@@ -1,25 +1,53 @@
 class ShellyDevice:
+    DEVICES = {
+        "SHSW-PM": "Shelly1PM"
+    }
+
     def __init__(self, ip):
         self.ip = ip
         
+        self._fetchDeviceGen()
         self.refresh()
-        self.DEVICES = {
-            "SHSW-PM": "Devices"
-        }
-        
+        self._loadKeys()
+
     def refresh(self):
         self.isValid = True
-        self._fetchDeviceGen()
+        
         self._fetchStatus()
         self._fetchConfig()
-
-    
 
     def valid(self):
         return self.isValid
 
     def _invalid(self):
         self.isValid = False
+
+    def _loadKeys(self):
+        self._checkValid("loadKeys")
+
+        if not self.type in self.DEVICES:
+            self._invalid()
+            return
+
+        import json
+
+        with open(f"Devices/{self.DEVICES[self.type]}.json", "r") as file:
+            data = json.loads(file.read())
+            self.commandsList = data["commands"]
+            self.commands = {}
+
+            for command in self.commandsList:
+                self.commands[command] = data[command]
+
+        if "extends" in data and len(data["extends"]) > 0:
+            for ext in data["extends"]:
+                with open(f"Devices/{ext}.json", "r") as file:
+                    extData = json.loads(file.read())
+                    self.commandsList.extend(extData["commands"])
+
+                    for command in extData["commands"]:
+                        self.commands[command] = extData[command]
+
 
     def _checkValid(self, component):
         if not self.isValid:
@@ -63,10 +91,10 @@ class ShellyDevice:
         try:
             output = requests.get(f"http://{self.ip}/shelly").json()
             if "gen" in output and output["gen"] == 2:
-                self.key = output["app"]
+                self.type = output["app"]
                 self.gen = 2
             else:
-                self.key = output["type"]
+                self.type = output["type"]
                 self.gen = 1
 
         except:
