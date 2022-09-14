@@ -45,7 +45,7 @@ class Webhook:
         }
 
     def _canNotReachHandler(self, target):
-        if self.when["target"] == target.getValue("WiFi1IP"):
+        if self.when["target"] == target.ip:
             self.execute(target)
 
     def _OnEachCheckHandler(self, target):
