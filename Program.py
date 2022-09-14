@@ -9,31 +9,28 @@ class Program:
 
     def fetchDevice(self, ip):
         from ShellyDevice import ShellyDevice
-        import time
         from Webhooks import ConditionTypes
         
-        for _ in range(0, self.config["attempts"]):
-            try:
-                device = ShellyDevice(ip)
+        try:
+            device = ShellyDevice(ip)
 
-                self.webhooksList.checkHandler(ConditionTypes.EachCheck, device)
+            self.webhooksList.checkHandler(ConditionTypes.EachCheck, device)
+            
+            if device.valid():
                 self.webhooksList.checkHandler(ConditionTypes.CheckVar, device)
+            else:
+                self.webhooksList.checkHandler(ConditionTypes.CanNotReach, device)
 
-                if device.valid():
-                    break
-            except Exception as e:
-                print(f"ERROR:{e}")
+        except Exception as e:
+            print(f"ERROR:{e}")
 
-            time.sleep(self.config["attemptDelay"])
-
-        self.webhooksList.checkHandler(ConditionTypes.CanNotReach, None)
 
     def handle(self):
         import time
 
         while True:
-            for device in self.config["devices"]:
-                self.fetchDevice(device)
+            for deviceIP in self.config["devices"]:
+                self.fetchDevice(deviceIP)
 
             print(f"Delay of {self.config['delay']} seconds")
             time.sleep(self.config["delay"])
