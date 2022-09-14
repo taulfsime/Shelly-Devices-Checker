@@ -25,8 +25,8 @@ class ShellyDevice:
             value = None
             if part == "status":
                 value = self.status
-            elif part == "settings":
-                value = self.settings
+            elif part == "config":
+                value = self.config
 
             for step in path.split("/"):
                 if step.isdigit():

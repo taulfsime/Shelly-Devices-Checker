@@ -1,7 +1,5 @@
 {
 	"delay": 30,
-	"attempts": 1,
-	"attemptDelay": 2,
 	"devices": [
 		"192.168.1.5"
 	],
@@ -9,7 +7,11 @@
 		{
 			"enabled": true,
 			"when": {
-				"type": "EachCheck"
+				"type": "CheckVar",
+				"target": "192.168.1.5",
+				"var": "RelayIsOn",
+				"value": false,
+				"check": "equal"
 			},
 			"do": [
 				{
