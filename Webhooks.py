@@ -1,3 +1,6 @@
+from ShellyDevice import ShellyDevice
+
+
 class ConditionTypes:
     CanNotReach = "CanNotReach"
     CheckVar = "CheckVar"
@@ -41,55 +44,55 @@ class Webhook:
             ActionTypes.WriteToLog: self._writeToLog
         }
 
-    def _canNotReachHandler(self, targetData):
-        if self.when["target"] == targetData["ip"]:
-            self.execute(targetData)
+    def _canNotReachHandler(self, target):
+        if self.when["target"] == target.getValue("WiFi1IP"):
+            self.execute(target)
 
-    def _OnEachCheckHandler(self, targetData):
-        self.execute(targetData)
+    def _OnEachCheckHandler(self, target):
+        self.execute(target)
 
-    def _checkVariableHandler(self, targetData):
-        if self.when["target"] == targetData["ip"] and self.when["var"] in targetData:
-            targetValue = targetData[self.when["var"]]
+    def _checkVariableHandler(self, target):
+        if self.when["target"] == target.getValue("WiFi1IP") and self.when["var"] in target.commandsList:
+            targetValue = target.getValue(self.when["var"])
             checkValue = self.when["value"]
 
             if self.when["check"] == "lower":
                 if targetValue < checkValue:
-                    self.execute(targetData)
+                    self.execute(target)
 
             elif self.when["check"] == "equal":
                 if targetValue == checkValue:
-                    self.execute(targetData)
+                    self.execute(target)
 
             elif self.when["check"] == "higher":
                 if targetValue > checkValue:
-                    self.execute(targetData)
+                    self.execute(target)
                     
 
-    def _callUrl(self, action, targetData):
+    def _callUrl(self, action, target):
         if "url" not in action:
             raise Exception("Missing parameter: URL")
 
         import requests
         ret = requests.get(action["url"])
 
-    def _consoleLog(self, action, targetData):
-        print(targetData)
+    def _consoleLog(self, action, target):
+        print(target)
 
-    def _writeToLog(self, action, targetData):
+    def _writeToLog(self, action, target):
         if self.eventLogHandler:
-            self.eventLogHandler(targetData)
+            self.eventLogHandler(target)
 
-    def check(self, event, targetData):
+    def check(self, event, target):
         if not self.enabled: return
     
         if event in self.handlers and event == self.when["type"]:
-            self.handlers[event](targetData)
+            self.handlers[event](target)
 
-    def execute(self, targetData = None):
+    def execute(self, target = None):
         for action in self.do:
             if action["type"] in self.actions:
-                self.actions[action["type"]](action, targetData)
+                self.actions[action["type"]](action, target)
 
     def setEventLogHandler(self, handler):
         self.eventLogHandler = handler

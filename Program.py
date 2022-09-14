@@ -15,18 +15,18 @@ class Program:
         for _ in range(0, self.config["attempts"]):
             try:
                 device = ShellyDevice(ip)
-                print(device.getValue("RelaySource"))
+
+                self.webhooksList.checkHandler(ConditionTypes.EachCheck, device)
+                self.webhooksList.checkHandler(ConditionTypes.CheckVar, device)
 
                 if device.valid():
-                    self.webhooksList.checkHandler(ConditionTypes.EachCheck, { "ip": ip })
-                    self.webhooksList.checkHandler(ConditionTypes.CheckVar, { "ip": ip })
                     break
             except Exception as e:
                 print(f"ERROR:{e}")
 
             time.sleep(self.config["attemptDelay"])
 
-        self.webhooksList.checkHandler(ConditionTypes.CanNotReach, { "ip": ip })
+        self.webhooksList.checkHandler(ConditionTypes.CanNotReach, None)
 
     def handle(self):
         import time
@@ -81,7 +81,4 @@ class Program:
                 print("Error with checking for test version")
 
     def eventLogHandler(self, data):
-        import time
-
-        self.eventLogs.append((time.time(), data))
         print(data)
