@@ -16,6 +16,27 @@ class ShellyDevice:
         self._fetchStatus()
         self._fetchConfig()
 
+    def getValue(self, key):
+        self._checkValid("getValue")
+
+        if key in self.commandsList:
+            part, path = self.commands[key].split(":")
+
+            value = None
+            if part == "status":
+                value = self.status
+
+            for step in path.split("/"):
+                if step.isdigit():
+                    step = int(step)
+                
+                value = value[step]
+            
+            return value
+        else:
+            raise Exception("Invalid key")
+            
+
     def valid(self):
         return self.isValid
 
@@ -39,7 +60,7 @@ class ShellyDevice:
 
             for command in data["commands"]:
                 self.commandsList.append(command)
-                self.commands["command"] = data[command]
+                self.commands[command] = data[command]
 
             if "extends" in data and len(data["extends"]) > 0:
                 for ext in data["extends"]:

@@ -12,11 +12,10 @@ class Program:
         import time
         from Webhooks import ConditionTypes
         
-        ShellyDevice(ip)
-        return
         for _ in range(0, self.config["attempts"]):
             try:
                 device = ShellyDevice(ip)
+                print(device.getValue("RelaySource"))
 
                 if device.valid():
                     self.webhooksList.checkHandler(ConditionTypes.EachCheck, { "ip": ip })
