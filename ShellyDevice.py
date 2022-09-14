@@ -16,7 +16,7 @@ class ShellyDevice:
         self._fetchStatus()
         self._fetchConfig()
 
-    def getValue(self, key):
+    def getValue(self, key: str):
         self._checkValid("getValue")
 
         if key in self.commandsList:
@@ -25,6 +25,8 @@ class ShellyDevice:
             value = None
             if part == "status":
                 value = self.status
+            elif part == "settings":
+                value = self.settings
 
             for step in path.split("/"):
                 if step.isdigit():
@@ -118,3 +120,13 @@ class ShellyDevice:
 
         except:
             self._invalid()
+
+    def __str__(self):
+        if not self.valid(): return f"Invalid object ({self.ip})"
+
+        data = {}
+        for cmd in self.commandsList:
+            data[cmd] = self.getValue(cmd)
+
+        from json import dumps
+        return dumps(data)
