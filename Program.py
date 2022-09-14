@@ -28,6 +28,8 @@ class Program:
     def handle(self):
         import time
 
+        self.dataManager.getEventLog()
+
         while True:
             for deviceIP in self.config["devices"]:
                 self.fetchDevice(deviceIP)
@@ -78,4 +80,4 @@ class Program:
                 print("Error with checking for test version")
 
     def eventLogHandler(self, data):
-        print(data)
+        self.dataManager.addToEventLog(data)
