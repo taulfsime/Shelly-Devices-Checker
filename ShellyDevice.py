@@ -10,6 +10,8 @@ class ShellyDevice:
         self.onFail = onFail
         self.commands = {}
         self.commandsList = []
+        self.data = {}
+        self.prevData = {}
 
         self._fetchDeviceGen()
         self.refresh()
@@ -18,25 +20,41 @@ class ShellyDevice:
     def refresh(self):
         self.isValid = True
         
+        self.prevData = self.data
+
         self._fetchStatus()
         self._fetchConfig()
 
         if self.onRefresh:
             self.onRefresh(self)
 
-    def getValue(self, key: str):
-        self._checkValid("getValue")
+    def getChanged(self):
+        if len(self.data) == 0 or len(self.prevData) == 0:
+            return False
+        
+        changed = {}
+        for key in self.commandsList:
+            curr = self.getValue(key)
+            prev = self.getPrevValue(key)
+
+            print(f"{key} {prev} {curr}")
+
+            if curr != prev:
+                changed[key] = {
+                    "current": curr,
+                    "previous": prev
+                }
+
+        return changed
+
+    def _findValue(self, key: str, current = True):
+        if not current and len(self.prevData) == 0:
+            raise Exception("Can not find prevData")
 
         if key in self.commandsList:
-            part, path = self.commands[key].split(":")
+            value = self.data if current else self.prevData
 
-            value = None
-            if part == "status":
-                value = self.status
-            elif part == "config":
-                value = self.config
-
-            for step in path.split("/"):
+            for step in self.commands[key].split("/"):
                 if step.isdigit():
                     step = int(step)
                 
@@ -45,7 +63,16 @@ class ShellyDevice:
             return value
         else:
             raise Exception("Invalid key")
-            
+
+    def getPrevValue(self, key: str):
+        self._checkValid("getPrevValue")
+
+        return self._findValue(key, False)
+
+    def getValue(self, key: str):
+        self._checkValid("getValue")
+
+        return self._findValue(key, True)
 
     def valid(self):
         return self.isValid
@@ -98,7 +125,7 @@ class ShellyDevice:
         ]
 
         try:
-            self.config = requests.get(URLs[self.gen - 1]).json()
+            self.data["config"] = requests.get(URLs[self.gen - 1]).json()
         except:
             self._invalid()
 
@@ -113,7 +140,7 @@ class ShellyDevice:
         ]
 
         try:
-            self.status = requests.get(URLs[self.gen - 1]).json()
+            self.data["status"] = requests.get(URLs[self.gen - 1]).json()
         except:
             self._invalid()
 
