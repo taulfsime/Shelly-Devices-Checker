@@ -12,15 +12,15 @@
         "ID",
         "Uptime"
     ],
-    "WiFi1Connected": "status:wifi_sta/connected",
-    "WiFi1SSID": "status:wifi_sta/ssid",
-    "WiFi1IP": "status:wifi_sta/ip",
-    "WiFi1RSSI": "status:wifi_sta/rssi",
-    "CloudEnabled": "status:cloud/enabled",
-    "CloudConnected": "status:cloud/connected",
-    "Time": "status:time",
-    "UnixTime": "status:unixtime",
-    "HasUpdate": "status:has_update",
-    "ID": "status:mac",
-    "Uptime": "status:uptime"
+    "WiFi1Connected": "status/wifi_sta/connected",
+    "WiFi1SSID": "status/wifi_sta/ssid",
+    "WiFi1IP": "status/wifi_sta/ip",
+    "WiFi1RSSI": "status/wifi_sta/rssi",
+    "CloudEnabled": "status/cloud/enabled",
+    "CloudConnected": "status/cloud/connected",
+    "Time": "status/time",
+    "UnixTime": "status/unixtime",
+    "HasUpdate": "status/has_update",
+    "ID": "status/mac",
+    "Uptime": "status/uptime"
 }

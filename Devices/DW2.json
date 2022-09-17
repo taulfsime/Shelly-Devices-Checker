@@ -4,6 +4,6 @@
         "State",
         "BatteryVoltage"
     ],
-    "State": "status:sensor/state",
-    "BatteryVoltage": "status:bat/voltage"
+    "State": "status/sensor/state",
+    "BatteryVoltage": "status/bat/voltage"
 }

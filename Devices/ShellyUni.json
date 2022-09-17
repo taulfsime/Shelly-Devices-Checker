@@ -7,9 +7,9 @@
         "Relay2Source",
         "ADCVoltage"
     ],
-    "Relay1IsOn": "status:relays/0/ison",
-    "Relay1Source": "status:relays/0/source",
-    "Relay2IsOn": "status:relays/1/ison",
-    "Relay2Source": "status:relays/1/source",
-    "ADCVoltage": "status:adcs/0/voltage"
+    "Relay1IsOn": "status/relays/0/ison",
+    "Relay1Source": "status/relays/0/source",
+    "Relay2IsOn": "status/relays/1/ison",
+    "Relay2Source": "status/relays/1/source",
+    "ADCVoltage": "status/adcs/0/voltage"
 }
