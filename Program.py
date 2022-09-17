@@ -6,24 +6,7 @@ class Program:
         self.settings = None
         self.webhooksList = None
         self.dataManager = DataManager()
-
-    def fetchDevice(self, ip):
-        from ShellyDevice import ShellyDevice
-        from Webhooks import ConditionTypes
-        
-        try:
-            device = ShellyDevice(ip)
-
-            self.webhooksList.checkHandler(ConditionTypes.EachCheck, device)
-            
-            if device.valid():
-                self.webhooksList.checkHandler(ConditionTypes.CheckVar, device)
-            else:
-                self.webhooksList.checkHandler(ConditionTypes.CanNotReach, device)
-
-        except Exception as e:
-            print(f"ERROR:{e}")
-
+        self.devices = []
 
     def handle(self):
         import time
@@ -31,8 +14,8 @@ class Program:
         self.dataManager.getEventLog()
 
         while True:
-            for deviceIP in self.config["devices"]:
-                self.fetchDevice(deviceIP)
+            for device in self.devices:
+                device.refresh()
 
             print(f"Delay of {self.config['delay']} seconds")
             time.sleep(self.config["delay"])
@@ -40,12 +23,23 @@ class Program:
     def loadConfig(self):
         import json
         from Webhooks import WebhooksList
+        from ShellyDevice import ShellyDevice
+        from Webhooks import ConditionTypes
         
         with open("config.json", "r") as file:
             self.config = json.loads(file.read())
 
         self.webhooksList = WebhooksList(self.config["webhooks"] if "webhooks" in self.config else [])
         self.webhooksList.setEventLogHandler(self.eventLogHandler)
+
+        for deviceIP in self.config["devices"]:
+            device = ShellyDevice(
+                deviceIP, 
+                onRefresh = lambda x: self.webhooksList.checkHandler(ConditionTypes.CheckVar, x),
+                onFail = lambda x: self.webhooksList.checkHandler(ConditionTypes.CanNotReach, x)
+            )
+
+            self.devices.append(device)
 
     def versionCheck(self):
         import json

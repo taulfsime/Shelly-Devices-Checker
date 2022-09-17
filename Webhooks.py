@@ -1,6 +1,3 @@
-from ShellyDevice import ShellyDevice
-
-
 class ConditionTypes:
     CanNotReach = "CanNotReach"
     CheckVar = "CheckVar"
@@ -52,7 +49,7 @@ class Webhook:
         self.execute(target)
 
     def _checkVariableHandler(self, target):
-        if self.when["target"] == target.getValue("WiFi1IP") and self.when["var"] in target.commandsList:
+        if self.when["target"] == target.ip and self.when["var"] in target.commandsList:
             targetValue = target.getValue(self.when["var"])
             checkValue = self.when["value"]
 
@@ -66,8 +63,7 @@ class Webhook:
 
             elif self.when["check"] == "higher":
                 if targetValue > checkValue:
-                    self.execute(target)
-                    
+                    self.execute(target)            
 
     def _callUrl(self, action, target):
         if "url" not in action:
@@ -96,4 +92,3 @@ class Webhook:
 
     def setEventLogHandler(self, handler):
         self.eventLogHandler = handler
-
