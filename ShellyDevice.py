@@ -1,10 +1,13 @@
 class ShellyDevice:
     DEVICES = {
-        "SHSW-PM": "Shelly1PM"
+        "SHSW-PM": "Shelly1PM",
+        "SHUNI-1": "ShellyUNI"
     }
 
-    def __init__(self, ip):
+    def __init__(self, ip, onFail = None, onRefresh = None):
         self.ip = ip
+        self.onRefresh = onRefresh
+        self.onFail = onFail
         
         self._fetchDeviceGen()
         self.refresh()
@@ -15,6 +18,9 @@ class ShellyDevice:
         
         self._fetchStatus()
         self._fetchConfig()
+
+        if self.onRefresh:
+            self.onRefresh(self)
 
     def getValue(self, key: str):
         self._checkValid("getValue")
@@ -44,6 +50,9 @@ class ShellyDevice:
 
     def _invalid(self):
         self.isValid = False
+
+        if self.onFail:
+            self.onFail(self)
 
     def _loadKeys(self):
         self._checkValid("loadKeys")
@@ -130,3 +139,4 @@ class ShellyDevice:
 
         from json import dumps
         return dumps(data)
+
