@@ -18,9 +18,10 @@ class ShellyDevice:
         self._loadKeys()
 
     def refresh(self):
+        from copy import deepcopy
         self.isValid = True
         
-        self.prevData = self.data
+        self.prevData = deepcopy(self.data)
 
         self._fetchStatus()
         self._fetchConfig()
@@ -36,8 +37,6 @@ class ShellyDevice:
         for key in self.commandsList:
             curr = self.getValue(key)
             prev = self.getPrevValue(key)
-
-            print(f"{key} {prev} {curr}")
 
             if curr != prev:
                 changed[key] = {
