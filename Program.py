@@ -1,45 +1,45 @@
 class Program:
     def __init__(self):
-        from DataManager import DataManager
-
         self.config = None
         self.settings = None
-        self.webhooksList = None
-        self.dataManager = DataManager()
         self.devices = []
+        self.webhooks = []
 
     def handle(self):
         import time
 
-        self.dataManager.getEventLog()
-
         while True:
             for device in self.devices:
                 device.refresh()
+
+            #TODO Add Webhooks
 
             print(f"Delay of {self.config['delay']} seconds")
             time.sleep(self.config["delay"])
 
     def loadConfig(self):
         import json
-        from Webhooks import WebhooksList
         from ShellyDevice import ShellyDevice
         from Webhooks import ConditionTypes
+        from Webhooks import Webhook
         
         with open("config.json", "r") as file:
             self.config = json.loads(file.read())
 
-        self.webhooksList = WebhooksList(self.config["webhooks"] if "webhooks" in self.config else [])
-        self.webhooksList.setEventLogHandler(self.eventLogHandler)
+        if "webhooks" in self.config:
+            for whData in self.config["webhooks"]:
+                webhook = Webhook(whData)
+                self.webhooks.append(webhook)
 
-        for deviceIP in self.config["devices"]:
-            device = ShellyDevice(
-                deviceIP, 
-                onRefresh = lambda x: self.webhooksList.checkHandler(ConditionTypes.CheckVar, x),
-                onFail = lambda x: self.webhooksList.checkHandler(ConditionTypes.CanNotReach, x)
-            )
+        if "devices" in self.config:
+            for deviceIP in self.config["devices"]:
+                device = ShellyDevice(
+                    deviceIP, 
+                    onRefresh = lambda x: self.webhooksList.checkHandler(ConditionTypes.CheckVar, x),
+                    onFail = lambda x: self.webhooksList.checkHandler(ConditionTypes.CanNotReach, x)
+                )
 
-            self.devices.append(device)
+                self.devices.append(device)
 
     def versionCheck(self):
         import json
@@ -73,5 +73,3 @@ class Program:
             except:
                 print("Error with checking for test version")
 
-    def eventLogHandler(self, data):
-        self.dataManager.addToEventLog(data)

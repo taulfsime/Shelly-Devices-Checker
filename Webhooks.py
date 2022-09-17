@@ -6,20 +6,6 @@ class ConditionTypes:
 class ActionTypes:
     CallUrl = "CallUrl"
     ConsoleLog = "ConsoleLog"
-    WriteToLog = "WriteToLog"
-
-class WebhooksList:
-    def __init__(self, data):
-        self.data = data
-        self.webhooks = [Webhook(x) for x in self.data]
-
-    def checkHandler(self, event, targetData):
-        for act in self.webhooks:
-            act.check(event, targetData)
-
-    def setEventLogHandler(self, handler):
-        for act in self.webhooks:
-            act.setEventLogHandler(handler)
 
 class Webhook:
     def __init__(self, data):
@@ -38,7 +24,6 @@ class Webhook:
         self.actions = {
             ActionTypes.CallUrl: self._callUrl,
             ActionTypes.ConsoleLog: self._consoleLog,
-            ActionTypes.WriteToLog: self._writeToLog
         }
 
     def _canNotReachHandler(self, target):
@@ -74,10 +59,6 @@ class Webhook:
 
     def _consoleLog(self, action, target):
         print(target)
-
-    def _writeToLog(self, action, target):
-        if self.eventLogHandler:
-            self.eventLogHandler(target)
 
     def check(self, event, target):
         if not self.enabled: return
