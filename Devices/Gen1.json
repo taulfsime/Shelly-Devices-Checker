@@ -10,8 +10,6 @@
         "UnixTime",
         "HasUpdate",
         "ID",
-        "TemperatureC",
-        "TemperatureF",
         "Uptime"
     ],
     "WiFi1Connected": "status:wifi_sta/connected",
@@ -24,7 +22,5 @@
     "UnixTime": "status:unixtime",
     "HasUpdate": "status:has_update",
     "ID": "status:mac",
-    "TemperatureC": "status:tmp/tC",
-    "TemperatureF": "status:tmp/tF",
     "Uptime": "status:uptime"
 }

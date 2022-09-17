@@ -4,10 +4,14 @@
         "RelayIsOn",
         "RelaySource",
         "MeterPower",
-        "OverTemperature"
+        "OverTemperature",
+        "TemperatureC",
+        "TemperatureF"
     ],
     "RelayIsOn": "status:relays/0/ison",
     "RelaySource": "status:relays/0/source",
     "MeterPower": "status:meters/0/power",
-    "OverTemperature": "status:overtemperature"
+    "OverTemperature": "status:overtemperature",
+    "TemperatureC": "status:tmp/tC",
+    "TemperatureF": "status:tmp/tF"
 }

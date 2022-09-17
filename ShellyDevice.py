@@ -8,7 +8,9 @@ class ShellyDevice:
         self.ip = ip
         self.onRefresh = onRefresh
         self.onFail = onFail
-        
+        self.commands = {}
+        self.commandsList = []
+
         self._fetchDeviceGen()
         self.refresh()
         self._loadKeys()
