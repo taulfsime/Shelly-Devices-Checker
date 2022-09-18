@@ -12,7 +12,8 @@ class Program:
             for device in self.devices:
                 device.refresh()
 
-            #TODO Add Webhooks
+            for webhook in self.webhooks:
+                webhook.check()
 
             print(f"Delay of {self.config['delay']} seconds")
             time.sleep(self.config["delay"])

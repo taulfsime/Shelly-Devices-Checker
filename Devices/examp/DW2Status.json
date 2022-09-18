@@ -1,0 +1,64 @@
+{
+    "wifi_sta": {
+        "connected": true,
+        "ssid": "",
+        "ip": "192.168.1.7",
+        "rssi": -47
+    },
+    "cloud": {
+        "enabled": true,
+        "connected": true
+    },
+    "mqtt": {
+        "connected": false
+    },
+    "time": "",
+    "unixtime": 0,
+    "serial": 3,
+    "has_update": false,
+    "mac": "3494546F2C81",
+    "cfg_changed_cnt": 0,
+    "actions_stats": {
+        "skipped": 0
+    },
+    "is_valid": true,
+    "tmp": {
+        "value": 24.60,
+        "units": "C",
+        "tC": 24.60,
+        "tF": 76.28,
+        "is_valid": true
+    },
+    "lux": {
+        "value": 150,
+        "illumination": "twilight",
+        "is_valid": true
+    },
+    "accel": {
+        "tilt": -1,
+        "vibration": -1
+    },
+    "sensor": {
+        "state": "close",
+        "is_valid": true
+    },
+    "bat": {
+        "value": 98,
+        "voltage": 5.90
+    },
+    "act_reasons": [
+        "button"
+    ],
+    "sensor_error": 0,
+    "update": {
+        "status": "unknown",
+        "has_update": false,
+        "new_version": "",
+        "old_version": "20220209-093605/v1.11.8-g8c7bb8d"
+    },
+    "ram_total": 51352,
+    "ram_free": 39360,
+    "fs_size": 233681,
+    "fs_free": 154616,
+    "uptime": 12
+}

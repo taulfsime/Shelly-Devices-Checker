@@ -6,14 +6,24 @@ class ConditionTypes:
 class ActionTypes:
     CallUrl = "CallUrl"
     ConsoleLog = "ConsoleLog"
+"""
+    Rename to Action
+    Each action can containes multiple actions (can be seperated in classes)
+    Each action has single or multiple conditions (seperated in objects)
+    Check function that will loop over every condition and change its 'shouldExecute' value on true or false
+    Condition can has "and" object which will be called also, if the main parrent condition is true
+    If more than one conditions are valid execute all actions
+    Actions should have call function that will execute the action without checking the conditions
 
+    Good to have:
+    feedback for each 'and' object
+"""
 class Webhook:
     def __init__(self, data):
         self.data = data
         self.when = self.data["when"]
         self.do = self.data["do"]
         self.enabled = self.data["enabled"]
-        self.eventLogHandler = None
 
         self.handlers = {
             ConditionTypes.CanNotReach: self._canNotReachHandler,
@@ -26,13 +36,33 @@ class Webhook:
             ActionTypes.ConsoleLog: self._consoleLog,
         }
 
+    """
+    {
+        "type": "CanNotReach",
+        "target": "192.168.000.000" -> if missing execute on every call
+    }
+    """
     def _canNotReachHandler(self, target):
         if self.when["target"] == target.ip:
             self.execute(target)
 
+    """
+    {
+        "type": "EachCheck"
+    }
+    """
     def _OnEachCheckHandler(self, target):
         self.execute(target)
 
+    """
+    {
+        "type": "CheckVar",
+        "target": "000.000.000.000" -> If missing checkes every call
+        "var": "WiFiRSSI",
+        "value": -50,
+        "compare": "higher" -> Possible values are: higher, lower and equal
+    }
+    """
     def _checkVariableHandler(self, target):
         if self.when["target"] == target.ip and self.when["var"] in target.commandsList:
             targetValue = target.getValue(self.when["var"])
@@ -70,6 +100,3 @@ class Webhook:
         for action in self.do:
             if action["type"] in self.actions:
                 self.actions[action["type"]](action, target)
-
-    def setEventLogHandler(self, handler):
-        self.eventLogHandler = handler
