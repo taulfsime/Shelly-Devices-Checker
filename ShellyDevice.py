@@ -4,14 +4,12 @@ class ShellyDevice:
         "SHUNI-1": "ShellyUNI"
     }
 
-    def __init__(self, ip, onRefresh = None, onInvalid = None):
+    def __init__(self, ip):
         self.ip = ip
         self.commands = {}
         self.commandsList = []
         self.data = {}
         self.prevData = {}
-        self.onRefresh = onRefresh
-        self.onInvalid = onInvalid
 
         self._fetchDeviceGen()
         self.refresh()
@@ -25,9 +23,6 @@ class ShellyDevice:
 
         self._fetchStatus()
         self._fetchConfig()
-
-        if self.onRefresh:
-            self.onRefresh(self)
 
     def getChanged(self):
         if len(self.data) == 0 or len(self.prevData) == 0:
@@ -78,9 +73,6 @@ class ShellyDevice:
 
     def _invalid(self):
         self.isValid = False
-
-        if self.onInvalid:
-            self.onInvalid(self)
 
     def _loadKeys(self):
         if not self.isValid: return
@@ -163,12 +155,3 @@ class ShellyDevice:
 
         from json import dumps
         return dumps(data)
-
-    def setOnRefresh(self, onRefresh):
-        if self.onRefresh == None:
-            self.onRefresh = onRefresh
-
-    def setOnInvalid(self, onIvalid):
-        if self.onInvalid == None:
-            self.onInvalid = onIvalid
-

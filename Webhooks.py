@@ -1,58 +1,40 @@
-class ConditionTypes:
+class WebhookCondition:
     CanNotReach = "CanNotReach"
     CheckVar = "CheckVar"
-    EachCheck = "EachCheck"
+    OnRefresh = "OnRefresh"
 
-class ActionTypes:
-    CallUrl = "CallUrl"
-    ConsoleLog = "ConsoleLog"
-
-class Webhook:
     def __init__(self, data):
+        from ShellyDevice import ShellyDevice
+
         self.data = data
-        self.when = self.data["when"]
-        self.do = self.data["do"]
-        self.enabled = self.data["enabled"]
+        self.target = ShellyDevice(self.data["target"]) if "target" in self.data else False
+        self.andCondition = self.self["and"] if "and" in self.data else False
 
         self.handlers = {
-            ConditionTypes.CanNotReach: self._canNotReachHandler,
-            ConditionTypes.CheckVar: self._checkVariableHandler,
-            ConditionTypes.EachCheck: self._OnEachCheckHandler,
-        }
-
-        self.actions = {
-            ActionTypes.CallUrl: self._callUrl,
-            ActionTypes.ConsoleLog: self._consoleLog,
+            self.CanNotReach: self._CanNotReach,
+            self.CheckVar: self._CheckVar,
+            self.OnRefresh: self._OnRefresh
         }
 
     """
     {
         "type": "CanNotReach",
-        "target": "192.168.000.000" 
+        "target": "192.168.000.000"
         "and": {...}
     }
     """
-    def _canNotReachHandler(self, condition, target) -> bool:
-        if "and" in condition and not self._checkcondition(condition, target):
-            return False
-
-        if "target" not in self.when or self.when["target"] == target.ip:
-            return not target.isValid
-
-        return False
+    def _CanNotReach(self) -> bool:
+        return not self.target.valid()
 
     """
     {
-        "type": "EachCheck",
+        "type": "OnRefresh",
+        "target": "000.000.000.000"
         "and": {...}
     }
     """
-    def _OnEachCheckHandler(self, condition, target) -> bool:
-        if "and" in condition and not self._checkcondition(condition, target):
-            return False
-
+    def _OnRefresh(self) -> bool:
         return True
-
 
     """
     {
@@ -63,26 +45,53 @@ class Webhook:
         "compare": "higher" -> Possible values are: higher, lower and equal
     }
     """
-    def _checkVariableHandler(self, condition, target) -> bool:
-        if "and" in condition and not self._checkCondition(condition, target):
-            return False
+    def _CheckVar(self) -> bool:
+        var = self.data["var"]
+        if var in self.target.commandsList:
+            targetValue = self.target.getValue(var)
+            checkValue = self.data["value"]
 
-        if self.when["target"] == target.ip and self.when["var"] in target.commandsList:
-            targetValue = target.getValue(self.when["var"])
-            checkValue = self.when["value"]
-
-            if self.when["check"] == "lower":
+            if self.data["check"] == "lower":
                 if targetValue < checkValue:
                     return True
-
-            elif self.when["check"] == "equal":
+            elif self.data["check"] == "equal":
                 if targetValue == checkValue:
                     return True
-            elif self.when["check"] == "higher":
+            elif self.data["check"] == "higher":
                 if targetValue > checkValue:
                     return True
 
         return False
+
+    def check(self):
+        self.target.refresh()
+
+        if self.andCondition and not self.andCondition.check():
+            return False
+
+        if self.data["type"] in self.handlers:
+            return self.handlers[self.data["type"]]()
+
+        return False
+
+    def getTarget(self):
+        return self.target
+
+class ActionTypes:
+    CallUrl = "CallUrl"
+    ConsoleLog = "ConsoleLog"
+
+class Webhook:
+    def __init__(self, data):
+        self.data = data
+        self.conditions = [WebhookCondition(x) for x in self.data["conditions"]]
+        self.do = self.data["do"]
+        self.enabled = self.data["enabled"]
+
+        self.actions = {
+            ActionTypes.CallUrl: self._callUrl,
+            ActionTypes.ConsoleLog: self._consoleLog,
+        }
 
     def _callUrl(self, action, target):
         if "url" not in action:
@@ -94,40 +103,16 @@ class Webhook:
     def _consoleLog(self, action, target):
         print(target)
 
-    def check(self, target) -> None:
+    def performCheck(self) -> None:
         if not self.enabled: return
 
-        for condition in self.when:
-            if self._checkCondition(condition, target):
-                self.execute(target)
-
-    def _checkCondition(self, condition, target) -> bool:
-        if condition["type"] not in self.handlers:
-            raise Exception(f"Unknown conditio type ({condition})")
-
-        return self.handlers[condition["type"]](condition, target)
+        for cond in self.conditions:
+            if cond.check():
+                self.execute(cond.getTarget())
 
     def execute(self, target = None):
         for action in self.do:
             if action["type"] in self.actions:
                 self.actions[action["type"]](action, target)
-
-    def deviceOnRefresh(self, device):
-        print(f"REFRESH: {device}")
-
-    def deviceOnInvalid(self, device):
-        print(f"INVALID: {device}")
-
-    def getTargets(self):
-        return [x["target"] for x in self.when]
-
-    def applyToDevice(self, device):
-        if not device.isValid(): return False
-        if device.ip not in self.getTargets(): return False
-
-        device.setOnInvalid(self.deviceOnInvalid)
-        device.setOnRefresh(self.deviceOnRefresh)
-
-        return True
 
 
