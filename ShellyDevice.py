@@ -4,14 +4,14 @@ class ShellyDevice:
         "SHUNI-1": "ShellyUNI"
     }
 
-    def __init__(self, ip, onFail = None, onRefresh = None):
+    def __init__(self, ip, onRefresh = None, onInvalid = None):
         self.ip = ip
-        self.onRefresh = onRefresh
-        self.onFail = onFail
         self.commands = {}
         self.commandsList = []
         self.data = {}
         self.prevData = {}
+        self.onRefresh = onRefresh
+        self.onInvalid = onInvalid
 
         self._fetchDeviceGen()
         self.refresh()
@@ -64,12 +64,12 @@ class ShellyDevice:
             raise Exception("Invalid key")
 
     def getPrevValue(self, key: str):
-        self._checkValid("getPrevValue")
+        if not self.isValid: return None
 
         return self._findValue(key, False)
 
     def getValue(self, key: str):
-        self._checkValid("getValue")
+        if not self.isValid: return False
 
         return self._findValue(key, True)
 
@@ -79,11 +79,11 @@ class ShellyDevice:
     def _invalid(self):
         self.isValid = False
 
-        if self.onFail:
-            self.onFail(self)
+        if self.onInvalid:
+            self.onInvalid(self)
 
     def _loadKeys(self):
-        self._checkValid("loadKeys")
+        if not self.isValid: return
 
         if not self.type in self.DEVICES:
             self._invalid()
@@ -109,12 +109,8 @@ class ShellyDevice:
                             self.commandsList.append(command)
                             self.commands[command] = extData[command]
 
-    def _checkValid(self, component):
-        if not self.isValid:
-            raise Exception(f"error.{component}")
-
     def _fetchConfig(self):
-        self._checkValid("fetchConfig")
+        if not self.isValid: return
 
         import requests
 
@@ -124,12 +120,12 @@ class ShellyDevice:
         ]
 
         try:
-            self.data["config"] = requests.get(URLs[self.gen - 1]).json()
+            self.data["config"] = requests.get(URLs[self.gen - 1], timeout=10).json()
         except:
             self._invalid()
 
     def _fetchStatus(self):
-        self._checkValid("fetchStatus")
+        if not self.isValid: return
 
         import requests
 
@@ -139,7 +135,7 @@ class ShellyDevice:
         ]
 
         try:
-            self.data["status"] = requests.get(URLs[self.gen - 1]).json()
+            self.data["status"] = requests.get(URLs[self.gen - 1], timeout=10).json()
         except:
             self._invalid()
 
@@ -147,7 +143,7 @@ class ShellyDevice:
         import requests
 
         try:
-            output = requests.get(f"http://{self.ip}/shelly").json()
+            output = requests.get(f"http://{self.ip}/shelly", timeout=10).json()
             if "gen" in output and output["gen"] == 2:
                 self.type = output["app"]
                 self.gen = 2
@@ -167,4 +163,12 @@ class ShellyDevice:
 
         from json import dumps
         return dumps(data)
+
+    def setOnRefresh(self, onRefresh):
+        if self.onRefresh == None:
+            self.onRefresh = onRefresh
+
+    def setOnInvalid(self, onIvalid):
+        if self.onInvalid == None:
+            self.onInvalid = onIvalid
 
