@@ -1,31 +1,38 @@
 class Program:
     def __init__(self):
+        from ShellyDevice import DevicesManager
+
         self.config = None
         self.settings = None
-        self.webhooks = []
+        self.automations = []
+        self.devicesManager = DevicesManager()
 
     def handle(self):
         import time
 
         while True:
+            self.devicesManager.refreshAllDevices()
+
             for webhook in self.webhooks:
-                webhook.performCheck()
+                webhook.performCheck(
+                    self.devicesManager.getDevices(
+                        webhook.getTargets()
+                    )
+                )
 
             print(f"Delay of {self.config['delay']} seconds")
             time.sleep(self.config["delay"])
 
     def loadConfig(self):
         import json
+        from Automations import Automation
         from ShellyDevice import ShellyDevice
-        from Webhooks import Webhook, WebhookCondition
         
         with open("config.json", "r") as file:
             self.config = json.loads(file.read())
 
-        for whData in self.config["webhooks"]:
-            self.webhooks.append(
-                Webhook(whData)
-            )
+        self.devicesManager.addDevices(self.config["devices"])
+        self.webhooks = [Automation(x) for x in self.config["automations"]]
 
     def versionCheck(self):
         import json

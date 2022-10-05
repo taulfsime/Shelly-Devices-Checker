@@ -1,13 +1,11 @@
-class WebhookCondition:
+class AutomationCondition:
     CanNotReach = "CanNotReach"
     CheckVar = "CheckVar"
     OnRefresh = "OnRefresh"
 
     def __init__(self, data):
-        from ShellyDevice import ShellyDevice
-
         self.data = data
-        self.target = ShellyDevice(self.data["target"]) if "target" in self.data else False
+        self.target = self.data["target"]
         self.andCondition = self.self["and"] if "and" in self.data else False
 
         self.handlers = {
@@ -23,8 +21,8 @@ class WebhookCondition:
         "and": {...}
     }
     """
-    def _CanNotReach(self) -> bool:
-        return not self.target.valid()
+    def _CanNotReach(self, target) -> bool:
+        return not target.valid()
 
     """
     {
@@ -33,7 +31,7 @@ class WebhookCondition:
         "and": {...}
     }
     """
-    def _OnRefresh(self) -> bool:
+    def _OnRefresh(self, traget) -> bool:
         return True
 
     """
@@ -45,10 +43,10 @@ class WebhookCondition:
         "compare": "higher" -> Possible values are: higher, lower and equal
     }
     """
-    def _CheckVar(self) -> bool:
+    def _CheckVar(self, target) -> bool:
         var = self.data["var"]
-        if var in self.target.commandsList:
-            targetValue = self.target.getValue(var)
+        if var in target.commandsList:
+            targetValue = target.getValue(var)
             checkValue = self.data["value"]
 
             if self.data["check"] == "lower":
@@ -63,56 +61,74 @@ class WebhookCondition:
 
         return False
 
-    def check(self):
-        self.target.refresh()
-
-        if self.andCondition and not self.andCondition.check():
+    def check(self, devices):
+        if self.andCondition and not self.andCondition.check(devices):
             return False
 
         if self.data["type"] in self.handlers:
-            return self.handlers[self.data["type"]]()
+            return self.handlers[self.data["type"]](devices[self.target])
 
         return False
 
-    def getTarget(self):
-        return self.target
+    def getTargets(self, list = []):
+        list.append(self.target)
+        if self.andCondition:
+            list.append(self.andCondition.getTargets())
 
-class ActionTypes:
-    CallUrl = "CallUrl"
+        return list
+
+class Automation:
+    CallURL = "CallURL"
     ConsoleLog = "ConsoleLog"
 
-class Webhook:
     def __init__(self, data):
         self.data = data
-        self.conditions = [WebhookCondition(x) for x in self.data["conditions"]]
+        self.conditions = [AutomationCondition(x) for x in self.data["conditions"]]
         self.do = self.data["do"]
         self.enabled = self.data["enabled"]
 
         self.actions = {
-            ActionTypes.CallUrl: self._callUrl,
-            ActionTypes.ConsoleLog: self._consoleLog,
+            self.CallURL: self._callURL,
+            self.ConsoleLog: self._consoleLog,
         }
 
-    def _callUrl(self, action, target):
-        if "url" not in action:
-            raise Exception("Missing parameter: URL")
-
-        import requests
-        ret = requests.get(action["url"])
-
-    def _consoleLog(self, action, target):
+    def _consoleLog(self, actionData, target):
         print(target)
 
-    def performCheck(self) -> None:
+    """
+    {
+        "type": "CallURL",
+        "URL": "..."
+    }
+    """
+    def _callURL(self, actionData, target):
+        import requests
+        ret = requests.get(actionData["url"])
+
+    def performCheck(self, devices) -> None:
         if not self.enabled: return
 
         for cond in self.conditions:
-            if cond.check():
-                self.execute(cond.getTarget())
+            if cond.check(devices):
+                self.execute(devices)
 
-    def execute(self, target = None):
+    def execute(self, devices):
         for action in self.do:
             if action["type"] in self.actions:
+                target = devices[action["target"]] if "target" in action else None
+
                 self.actions[action["type"]](action, target)
+
+    def getTargets(self):
+        targets = []
+
+        for cond in self.conditions:
+            targets.extend(cond.getTargets())
+
+        for act in self.do:
+            if "target" in act:
+                targets.append(act["target"])
+        
+        return targets
 
 

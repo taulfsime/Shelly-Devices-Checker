@@ -1,8 +1,22 @@
 {
 	"delay": 10,
 	"devices": [
-		"192.168.0.117"
+
 	],
-	"webhooks": [
+	"automations": [
+		{
+			"enabled": true,
+			"conditions": [
+				{
+					"type": "OnRefresh",
+					"target": "192.168.1.5"
+				}
+			],
+			"do": [
+				{
+					"type": "ConsoleLog"
+				}
+			]
+		}
 	]
 }
