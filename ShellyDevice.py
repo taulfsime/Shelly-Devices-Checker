@@ -1,3 +1,6 @@
+from http.client import REQUESTED_RANGE_NOT_SATISFIABLE
+
+
 class DevicesManager:
     def __ini__(self):
         self.devicesIPs = []
@@ -34,13 +37,14 @@ class ShellyDevice:
 
     def __init__(self, ip):
         self.ip = ip
-        self.commands = {}
-        self.commandsList = []
+        self.keys = []
         self.data = {}
         self.prevData = {}
 
         self._fetchDeviceGen()
         self.refresh()
+
+        #TODO: add functions for get all keys, check key...
         self._loadKeys()
 
     def refresh(self):
@@ -102,32 +106,29 @@ class ShellyDevice:
     def _invalid(self):
         self.isValid = False
 
-    def _loadKeys(self):
+    def _loadKeys(self, keysFile = None):
         if not self.isValid: return
 
-        if not self.type in self.DEVICES:
+        if self.type not in self.DEVICES:
             self._invalid()
             return
 
-        import json
+        if keysFile is None:
+            keysFile = self.DEVICES[self.type]
 
-        self.commands = {}
-        self.commandsList = []
+        with open(f"Devices/{keysFile}.json", "r") as file:
+            import json
 
-        with open(f"Devices/{self.DEVICES[self.type]}.json", "r") as file:
             data = json.loads(file.read())
 
-            for command in data["commands"]:
-                self.commandsList.append(command)
-                self.commands[command] = data[command]
+            self.keys.extend(data["keys"])
 
             if "extends" in data and len(data["extends"]) > 0:
                 for ext in data["extends"]:
-                    with open(f"Devices/{ext}.json", "r") as extFile:
-                        extData = json.loads(extFile.read())
-                        for command in extData["commands"]:
-                            self.commandsList.append(command)
-                            self.commands[command] = extData[command]
+                    self._loadKeys(ext)
+
+
+        
 
     def _fetchConfig(self):
         if not self.isValid: return

@@ -1,15 +1,25 @@
 {
     "extends": [ "Gen1" ],
-    "commands": [
-        "Relay1IsOn",
-        "Relay1Source",
-        "Relay2IsOn",
-        "Relay2Source",
-        "ADCVoltage"
-    ],
-    "Relay1IsOn": "status/relays/0/ison",
-    "Relay1Source": "status/relays/0/source",
-    "Relay2IsOn": "status/relays/1/ison",
-    "Relay2Source": "status/relays/1/source",
-    "ADCVoltage": "status/adcs/0/voltage"
+    "keys": [
+        {
+            "name": "Relay1IsOn",
+            "path": "status/relays/0/ison"
+        },
+        {
+            "name": "Relay1Source",
+            "path": "status/relays/0/source"
+        },
+        {
+            "name": "Relay2IsOn",
+            "path": "status/relays/1/ison"
+        },
+        {
+            "name": "Relay2Source",
+            "path": "status/relays/1/source"
+        },
+        {
+            "name": "ADCVoltage",
+            "path": "status/adcs/0/voltage"
+        }
+    ]
 }

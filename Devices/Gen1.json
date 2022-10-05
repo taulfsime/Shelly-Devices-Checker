@@ -1,26 +1,48 @@
 {
-    "commands": [
-        "WiFi1Connected", 
-        "WiFi1SSID", 
-        "WiFi1IP", 
-        "WiFi1RSSI", 
-        "CloudEnabled",
-        "CloudConnected",
-        "Time",
-        "UnixTime",
-        "HasUpdate",
-        "ID",
-        "Uptime"
-    ],
-    "WiFi1Connected": "status/wifi_sta/connected",
-    "WiFi1SSID": "status/wifi_sta/ssid",
-    "WiFi1IP": "status/wifi_sta/ip",
-    "WiFi1RSSI": "status/wifi_sta/rssi",
-    "CloudEnabled": "status/cloud/enabled",
-    "CloudConnected": "status/cloud/connected",
-    "Time": "status/time",
-    "UnixTime": "status/unixtime",
-    "HasUpdate": "status/has_update",
-    "ID": "status/mac",
-    "Uptime": "status/uptime"
+    "keys": [
+        {
+            "name": "WiFi1Connected",
+            "path": "status/wifi_sta/connected"
+        },
+        {
+            "name": "WiFi1SSID",
+            "path": "status/wifi_sta/ssid"
+        },
+        {
+            "name": "WiFi1IP",
+            "path": "status/wifi_sta/ip"
+        },
+        {
+            "name": "WiFi1RSSI",
+            "path": "status/wifi_sta/rssi"
+        },
+        {
+            "name": "CloudEnabled",
+            "path": "status/cloud/enabled"
+        },
+        {
+            "name": "CloudConnected",
+            "path": "status/cloud/connected"
+        },
+        {
+            "name": "Time",
+            "path": "status/time"
+        },
+        {
+            "name": "UnixTime",
+            "path": "status/unixtime"
+        },
+        {
+            "name": "HasUpdate",
+            "path": "status/has_update"
+        },
+        {
+            "name": "ID",
+            "path": "status/mac"
+        },
+        {
+            "name": "Uptime",
+            "path": "status/uptime"
+        }
+    ]
 }

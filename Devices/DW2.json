@@ -1,9 +1,13 @@
 {
     "extends": [ "Gen1" ],
-    "commands": [
-        "State",
-        "BatteryVoltage"
-    ],
-    "State": "status/sensor/state",
-    "BatteryVoltage": "status/bat/voltage"
+    "keys": [
+        {
+            "name": "State",
+            "path": "status/sensor/state"
+        },
+        {
+            "name": "BatteryVoltage",
+            "path": "status/bat/voltage"
+        }
+    ]
 }

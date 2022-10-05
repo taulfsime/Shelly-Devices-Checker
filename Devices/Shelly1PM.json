@@ -1,17 +1,29 @@
 {
     "extends": [ "Gen1" ],
-    "commands": [
-        "RelayIsOn",
-        "RelaySource",
-        "MeterPower",
-        "OverTemperature",
-        "TemperatureC",
-        "TemperatureF"
-    ],
-    "RelayIsOn": "status/relays/0/ison",
-    "RelaySource": "status/relays/0/source",
-    "MeterPower": "status/meters/0/power",
-    "OverTemperature": "status/overtemperature",
-    "TemperatureC": "status/tmp/tC",
-    "TemperatureF": "status/tmp/tF"
+    "keys": [
+        {
+            "name": "RelayIsOn",
+            "path": "status/relays/0/ison"
+        },
+        {
+            "name": "RelaySource",
+            "path": "status/relays/0/source"
+        },
+        {
+            "name": "MeterPower",
+            "path": "status/meters/0/power"
+        },
+        {
+            "name": "OverTemperature",
+            "path": "status/overtemperature"
+        },
+        {
+            "name": "TemperatureC",
+            "path": "status/tmp/tC"
+        },
+        {
+            "name": "TemperatureF",
+            "path": "status/tmp/tF"
+        }
+    ]
 }
