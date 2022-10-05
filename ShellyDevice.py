@@ -1,3 +1,31 @@
+class DevicesManager:
+    def __ini__(self):
+        self.devicesIPs = []
+        self.devices = {}
+
+    def addDevices(self, devicesIPs):
+        self.devicesIPs = devicesIPs
+        for deviceIP in self.devicesIPs:
+            self.devices[deviceIP] = ShellyDevice(deviceIP)
+
+    def getDevice(self, deviceIP):
+        if deviceIP not in self.devicesIPs: return False
+
+        return self.devices[deviceIP]
+
+    def getDevices(self, devicesIPs):
+        devices = {}
+
+        for ip in devicesIPs:
+            devices[ip] = self.getDevice(ip)
+
+        return devices
+
+
+    def refreshAllDevices(self):
+        for deviceIP in self.devicesIPs:
+            self.getDevice(deviceIP).refresh()
+
 class ShellyDevice:
     DEVICES = {
         "SHSW-PM": "Shelly1PM",

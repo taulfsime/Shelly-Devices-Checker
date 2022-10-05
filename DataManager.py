@@ -3,6 +3,7 @@ class DataManager:
         CREATE TABLE IF NOT EXISTS 
         EventLog (
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+            ip TEXT NOT NULL,
             timestamp FLOAT NOT NULL, 
             json MEDIUMTEXT NOT NULL
         )
@@ -14,9 +15,9 @@ class DataManager:
 
     QUERY_AddToEventLog = """
         INSERT INTO EventLog
-        (timestamp, json)
+        (timestamp, ip, json)
         VALUES
-        (?, ?)
+        (?, ?, ?)
     """
 
     def __init__(self):
@@ -25,16 +26,16 @@ class DataManager:
         self.connection = sqlite3.connect("data.db")
         
         with self.connection as con:
-            #con.execute(self.QUERY_DeleteEventLogTable)
-            con.execute(self.QUERY_CreateEventLogTable)
+            con.execute(self.QUERY_DeleteEventLogTable)
+            #con.execute(self.QUERY_CreateEventLogTable)
 
 
-    def addToEventLog(self, jsonData):
+    def addToEventLog(self, ip, jsonData):
         from datetime import datetime
         ts = datetime.timestamp(datetime.now())
         
         with self.connection as con:
-            con.execute(self.QUERY_AddToEventLog, (ts, str(jsonData)))
+            con.execute(self.QUERY_AddToEventLog, (ts, ip, str(jsonData)))
 
     def getEventLog(self):
         with self.connection as con:
