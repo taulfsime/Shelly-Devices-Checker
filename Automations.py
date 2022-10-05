@@ -78,6 +78,7 @@ class AutomationCondition:
         return list
 
 class Automation:
+    from ShellyDevice import ShellyDevice
     CallURL = "CallURL"
     ConsoleLog = "ConsoleLog"
 
@@ -92,8 +93,14 @@ class Automation:
             self.ConsoleLog: self._consoleLog,
         }
 
-    def _consoleLog(self, actionData, target):
-        print(target)
+    """
+    {
+        "type": "ConsoleLog",
+        "target": "XXX.XXX.XXX.XXX"
+    }
+    """
+    def _consoleLog(self, actionData, target: ShellyDevice, validCondition: AutomationCondition):
+        print(validCondition.target)
 
     """
     {
@@ -101,7 +108,7 @@ class Automation:
         "URL": "..."
     }
     """
-    def _callURL(self, actionData, target):
+    def _callURL(self, actionData, target: ShellyDevice, validCondition: AutomationCondition):
         import requests
         ret = requests.get(actionData["url"])
 
@@ -110,14 +117,15 @@ class Automation:
 
         for cond in self.conditions:
             if cond.check(devices):
-                self.execute(devices)
+                self.execute(devices, cond)
+                return #Prevent executing the automation more than a once
 
-    def execute(self, devices):
+    def execute(self, devices, validCondition: AutomationCondition):
         for action in self.do:
             if action["type"] in self.actions:
                 target = devices[action["target"]] if "target" in action else None
 
-                self.actions[action["type"]](action, target)
+                self.actions[action["type"]](action, target, validCondition)
 
     def getTargets(self):
         targets = []

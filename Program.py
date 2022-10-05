@@ -13,10 +13,10 @@ class Program:
         while True:
             self.devicesManager.refreshAllDevices()
 
-            for webhook in self.webhooks:
-                webhook.performCheck(
+            for automation in self.automations:
+                automation.performCheck(
                     self.devicesManager.getDevices(
-                        webhook.getTargets()
+                        automation.getTargets()
                     )
                 )
 
@@ -26,13 +26,12 @@ class Program:
     def loadConfig(self):
         import json
         from Automations import Automation
-        from ShellyDevice import ShellyDevice
         
         with open("config.json", "r") as file:
             self.config = json.loads(file.read())
 
         self.devicesManager.addDevices(self.config["devices"])
-        self.webhooks = [Automation(x) for x in self.config["automations"]]
+        self.automations = [Automation(x) for x in self.config["automations"]]
 
     def versionCheck(self):
         import json
