@@ -40,26 +40,35 @@ class AutomationCondition:
         "target": "000.000.000.000"
         "var": "WiFiRSSI",
         "value": -50,
-        "check": "higher" -> Possible values are: higher, lower and equal
+        "compare": "<" -> Possible values are: <= < == != > >=
     }
     """
     def _CheckVar(self, target) -> bool:
+        COMPARES = {
+            "<": lambda x, y: x < y,
+            ">": lambda x, y: x > y,
+            "==": lambda x, y: x == y,
+            "!=": lambda x, y: x != y,
+            "<=": lambda x, y: x <= y,
+            ">=": lambda x, y: x >= x
+        }
+
+        from Errors import MissingKey
+        if "var" not in self.data:
+            raise MissingKey("var")
+
+        if "compare" not in self.data or self.data["compare"] not in COMPARES:
+            raise MissingKey("compare")
+
+        if "value" not in self.data:
+            raise MissingKey("value")
+
         var = self.data["var"]
 
         targetValue = target.getValue(var)
         checkValue = self.data["value"]
 
-        if self.data["check"] == "lower":
-            if targetValue < checkValue:
-                return True
-        elif self.data["check"] == "equal":
-            if targetValue == checkValue:
-                return True
-        elif self.data["check"] == "higher":
-            if targetValue > checkValue:
-                return True
-
-        return False
+        return COMPARES[self.data["compare"]](targetValue, checkValue)
 
     def check(self, devices):
         if self.andCondition and not self.andCondition.check(devices):
