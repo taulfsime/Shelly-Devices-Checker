@@ -58,12 +58,12 @@ class ShellyDevice:
             return False
         
         changed = {}
-        for key in self.commandsList:
-            curr = self.getValue(key)
-            prev = self.getPrevValue(key)
+        for key in self.key:
+            curr = self.getValue(key["name"])
+            prev = self.getPrevValue(key["name"])
 
             if curr != prev:
-                changed[key] = {
+                changed[key["name"]] = {
                     "current": curr,
                     "previous": prev
                 }
@@ -71,10 +71,11 @@ class ShellyDevice:
         return changed
 
     def _findValue(self, key: str, current = True):
+        from Errors import UnexpectedKey
+
         if not current and len(self.prevData) == 0:
             raise Exception("Can not find prevData")
 
-        
         for keyData in self.keys:
             if keyData["name"] == key:
                 value = self.data if current else self.prevData
@@ -87,13 +88,19 @@ class ShellyDevice:
                 
                 return value
 
+        raise UnexpectedKey(key)
+
     def getPrevValue(self, key: str):
-        if not self.isValid: return None
+        if not self.isValid:
+            from Errors import InvalidObject
+            raise InvalidObject()
 
         return self._findValue(key, False)
 
     def getValue(self, key: str):
-        if not self.isValid: return False
+        if not self.isValid:
+            from Errors import InvalidObject
+            raise InvalidObject()
 
         return self._findValue(key, True)
 
