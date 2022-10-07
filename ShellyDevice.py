@@ -1,8 +1,5 @@
-from http.client import REQUESTED_RANGE_NOT_SATISFIABLE
-
-
 class DevicesManager:
-    def __ini__(self):
+    def __init__(self):
         self.devicesIPs = []
         self.devices = {}
 
@@ -77,18 +74,18 @@ class ShellyDevice:
         if not current and len(self.prevData) == 0:
             raise Exception("Can not find prevData")
 
-        if key in self.commandsList:
-            value = self.data if current else self.prevData
-
-            for step in self.commands[key].split("/"):
-                if step.isdigit():
-                    step = int(step)
+        
+        for keyData in self.keys:
+            if keyData["name"] == key:
+                value = self.data if current else self.prevData
                 
-                value = value[step]
-            
-            return value
-        else:
-            raise Exception("Invalid key")
+                for step in keyData["path"].split("/"):
+                    if step.isdigit():
+                        step = int(step)
+                    
+                    value = value[step]
+                
+                return value
 
     def getPrevValue(self, key: str):
         if not self.isValid: return None
