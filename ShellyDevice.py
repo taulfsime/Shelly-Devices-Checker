@@ -78,7 +78,7 @@ class ShellyDevice:
         for keyData in self.keys:
             if keyData["name"] == key:
                 value = self.data if current else self.prevData
-                
+
                 for step in keyData["path"].split("/"):
                     if step.isdigit():
                         step = int(step)
@@ -123,9 +123,6 @@ class ShellyDevice:
             if "extends" in data and len(data["extends"]) > 0:
                 for ext in data["extends"]:
                     self._loadKeys(ext)
-
-
-        
 
     def _fetchConfig(self):
         if not self.isValid: return
@@ -176,8 +173,8 @@ class ShellyDevice:
         if not self.valid(): return f"Invalid object ({self.ip})"
 
         data = {}
-        for cmd in self.commandsList:
-            data[cmd] = self.getValue(cmd)
+        for cmd in self.keys:
+            data[cmd["name"]] = self.getValue(cmd["name"])
 
         from json import dumps
         return dumps(data)

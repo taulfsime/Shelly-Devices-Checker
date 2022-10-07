@@ -40,24 +40,24 @@ class AutomationCondition:
         "target": "000.000.000.000"
         "var": "WiFiRSSI",
         "value": -50,
-        "compare": "higher" -> Possible values are: higher, lower and equal
+        "check": "higher" -> Possible values are: higher, lower and equal
     }
     """
     def _CheckVar(self, target) -> bool:
         var = self.data["var"]
-        if var in target.commandsList:
-            targetValue = target.getValue(var)
-            checkValue = self.data["value"]
 
-            if self.data["check"] == "lower":
-                if targetValue < checkValue:
-                    return True
-            elif self.data["check"] == "equal":
-                if targetValue == checkValue:
-                    return True
-            elif self.data["check"] == "higher":
-                if targetValue > checkValue:
-                    return True
+        targetValue = target.getValue(var)
+        checkValue = self.data["value"]
+
+        if self.data["check"] == "lower":
+            if targetValue < checkValue:
+                return True
+        elif self.data["check"] == "equal":
+            if targetValue == checkValue:
+                return True
+        elif self.data["check"] == "higher":
+            if targetValue > checkValue:
+                return True
 
         return False
 
@@ -71,7 +71,9 @@ class AutomationCondition:
         return False
 
     def getTargets(self, list = []):
-        list.append(self.target)
+        if self.target not in list:
+            list.append(self.target)
+
         if self.andCondition:
             list.append(self.andCondition.getTargets())
 
@@ -96,16 +98,21 @@ class Automation:
     """
     {
         "type": "ConsoleLog",
-        "target": "XXX.XXX.XXX.XXX"
+        "target": "XXX.XXX.XXX.XXX",
+        "values": [] #if missing print all values
     }
     """
     def _consoleLog(self, actionData, target: ShellyDevice, validCondition: AutomationCondition):
-        valueKey = actionData["value"] if "value" in actionData else False
+        if "values" in actionData:
+            values = {}
 
-        if valueKey:
-            print(target.getValue(valueKey))
+            for key in actionData["values"]:
+                values[key] = target.getValue(key)
+
+            print(values)
+
         else:
-            print(validCondition.target)
+            print(str(target))
 
     """
     {

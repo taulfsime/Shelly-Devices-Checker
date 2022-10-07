@@ -8,15 +8,18 @@
 			"enabled": true,
 			"conditions": [
 				{
-					"type": "OnRefresh",
-					"target": "192.168.1.2"
+					"type": "CheckVar",
+					"target": "192.168.1.2",
+					"var": "RelayIsOn",
+					"value": true,
+					"check": "equal"
 				}
 			],
 			"do": [
 				{
 					"type": "ConsoleLog",
 					"target": "192.168.1.2",
-					"value": "WiFi1SSID"
+					"values": ["WiFi1RSSI", "UnixTime", "RelayIsOn"]
 				}
 			]
 		}
