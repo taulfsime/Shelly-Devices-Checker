@@ -1,7 +1,7 @@
 {
 	"delay": 10,
 	"devices": [
-
+		"192.168.1.2"
 	],
 	"automations": [
 		{
@@ -9,12 +9,14 @@
 			"conditions": [
 				{
 					"type": "OnRefresh",
-					"target": "192.168.1.5"
+					"target": "192.168.1.2"
 				}
 			],
 			"do": [
 				{
-					"type": "ConsoleLog"
+					"type": "ConsoleLog",
+					"target": "192.168.1.2",
+					"value": "WiFi1SSID"
 				}
 			]
 		}

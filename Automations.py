@@ -100,7 +100,12 @@ class Automation:
     }
     """
     def _consoleLog(self, actionData, target: ShellyDevice, validCondition: AutomationCondition):
-        print(validCondition.target)
+        valueKey = actionData["value"] if "value" in actionData else False
+
+        if valueKey:
+            print(target.getValue(valueKey))
+        else:
+            print(validCondition.target)
 
     """
     {
