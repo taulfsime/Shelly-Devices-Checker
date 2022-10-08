@@ -1,15 +1,15 @@
 class DevicesManager:
     def __init__(self):
-        self.devicesIPs = []
         self.devices = {}
 
     def addDevices(self, devicesIPs):
-        self.devicesIPs = devicesIPs
-        for deviceIP in self.devicesIPs:
+        for deviceIP in devicesIPs:
             self.devices[deviceIP] = ShellyDevice(deviceIP)
 
     def getDevice(self, deviceIP):
-        if deviceIP not in self.devicesIPs: return False
+        if deviceIP not in self.devices: 
+            from Errors import UnknownDevice
+            raise UnknownDevice()
 
         return self.devices[deviceIP]
 
@@ -23,8 +23,8 @@ class DevicesManager:
 
 
     def refreshAllDevices(self):
-        for deviceIP in self.devicesIPs:
-            self.getDevice(deviceIP).refresh()
+        for device in self.devices:
+            device.refresh()
 
 class ShellyDevice:
     DEVICES = {
@@ -41,7 +41,6 @@ class ShellyDevice:
         self._fetchDeviceGen()
         self.refresh()
 
-        #TODO: add functions for get all keys, check key...
         self._loadKeys()
 
     def refresh(self):
@@ -93,14 +92,14 @@ class ShellyDevice:
     def getPrevValue(self, key: str):
         if not self.isValid:
             from Errors import InvalidObject
-            raise InvalidObject()
+            raise InvalidObject(self)
 
         return self._findValue(key, False)
 
     def getValue(self, key: str):
         if not self.isValid:
             from Errors import InvalidObject
-            raise InvalidObject()
+            raise InvalidObject(self)
 
         return self._findValue(key, True)
 
@@ -130,6 +129,18 @@ class ShellyDevice:
             if "extends" in data and len(data["extends"]) > 0:
                 for ext in data["extends"]:
                     self._loadKeys(ext)
+
+    def getAllKeys(self) -> list:
+        if not self.valid(): 
+            from Errors import InvalidObject
+            raise InvalidObject(self)
+
+        keys = []
+
+        for key in self.keys:
+            keys.append(key)
+
+        return keys
 
     def _fetchConfig(self):
         if not self.isValid: return
