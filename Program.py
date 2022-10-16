@@ -1,27 +1,43 @@
-class Program:
+class Program():
     def __init__(self):
         from ShellyDevice import DevicesManager
+        from flask import Flask
 
         self.config = None
         self.settings = None
         self.automations = []
         self.devicesManager = DevicesManager()
 
-    def handle(self):
-        import time
+        self.apiApp = Flask("Shelly Device Checker")
 
-        while True:
-            self.devicesManager.refreshAllDevices()
+    def _getDeviceInfo(self, deviceip):
+        return str(self.devicesManager.getDevice(deviceip))
 
-            for automation in self.automations:
-                automation.performCheck(
-                    self.devicesManager.getDevices(
-                        automation.getTargets()
+    def handleDevices(self):
+        from ShellyDevice import DevicesManager
+
+        def wrapper(dm: DevicesManager, atm):
+            while True:
+                dm.refreshAllDevices()
+
+                for automation in atm:
+                    automation.performCheck(
+                        dm.getDevices(
+                            automation.getTargets()
+                        )
                     )
-                )
 
-            print(f"Delay of {self.config['delay']} seconds")
-            time.sleep(self.config["delay"])
+        from threading import Thread
+        Thread(target=wrapper, args=(
+            self.devicesManager, 
+            self.automations
+        )).start()
+
+    def start(self):
+        self.handleDevices()
+
+        self.apiApp.add_url_rule("/device/<deviceip>", view_func=self._getDeviceInfo)
+        self.apiApp.run(debug=True, port=5000)
 
     def loadConfig(self):
         import json
