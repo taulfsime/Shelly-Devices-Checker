@@ -21,10 +21,9 @@ class DevicesManager:
 
         return devices
 
-
     def refreshAllDevices(self):
-        for device in self.devices:
-            device.refresh()
+        for ip in self.devices:
+            self.devices[ip].refresh()
 
 class ShellyDevice:
     DEVICES = {
