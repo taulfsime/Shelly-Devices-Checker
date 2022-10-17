@@ -9,7 +9,7 @@ class DevicesManager:
     def getDevice(self, deviceIP):
         if deviceIP not in self.devices: 
             from Errors import UnknownDevice
-            raise UnknownDevice()
+            raise UnknownDevice(deviceIP)
 
         return self.devices[deviceIP]
 
