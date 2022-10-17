@@ -10,8 +10,19 @@ class Program():
 
         self.apiApp = Flask("Shelly Device Checker")
 
-    def _getDeviceInfo(self, deviceip):
-        return str(self.devicesManager.getDevice(deviceip))
+    def _getDeviceInfo(self, deviceip = None, key = None):
+        from Errors import UnexpectedKey, UnknownDevice
+        
+        try:
+            print(key)
+            if key is None:
+                return str(self.devicesManager.getDevice(deviceip))
+            
+            return str(self.devicesManager.getDevice(deviceip).getValue(key))
+        except UnknownDevice as e:
+            return str(e)
+        except UnexpectedKey as e:
+            return str(e)
 
     def handleDevices(self):
         from ShellyDevice import DevicesManager
@@ -37,7 +48,9 @@ class Program():
         self.handleDevices()
 
         self.apiApp.add_url_rule("/device/<deviceip>", view_func=self._getDeviceInfo)
-        self.apiApp.run(debug=True, port=5000)
+        self.apiApp.add_url_rule("/device/<deviceip>/<key>", view_func=self._getDeviceInfo)
+
+        self.apiApp.run(debug=False, port=5000)
 
     def loadConfig(self):
         import json
